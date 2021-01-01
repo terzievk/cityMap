@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+
+# Most of my executables are named 'f'
+f
+
+# Emacs temporary files
+*~
+
+# Emacs auto-save files
+\#*\#
