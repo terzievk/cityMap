@@ -11,4 +11,8 @@ class Factorial {
 };
 
 
+class Temp{
+  int x;
+  Temp(){}
+};
 #endif  // FACTORIAL_H_

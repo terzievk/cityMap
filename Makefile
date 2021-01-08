@@ -1,6 +1,6 @@
 SRC_DIR := sources
 OBJ_DIR := objects
-INC_DIR := includes
+INC_DIRS := includes doctest
 
 # f is fast to type - maybe change later
 EXE := f
@@ -8,7 +8,7 @@ SRC := $(wildcard $(SRC_DIR)/*.cpp)
 OBJ := $(SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 
 # where to search for headers
-CPPFLAGS := $(addprefix -I,$(INC_DIR))
+CPPFLAGS := $(addprefix -I,$(INC_DIRS))
 # generate dependencies makefiles,
 # which we read at the bottom with `include`
 CPPFLAGS := $(CPPFLAGS) -MMD -MP
