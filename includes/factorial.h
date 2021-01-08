@@ -1,6 +1,6 @@
 // Copyright
-#ifndef FACTORIAL_H_
-#define FACTORIAL_H_
+#ifndef INCLUDES_FACTORIAL_H_
+#define INCLUDES_FACTORIAL_H_
 
 
 class Factorial {
@@ -15,4 +15,5 @@ class Temp{
   int x;
   Temp(){}
 };
-#endif  // FACTORIAL_H_
+
+#endif  // INCLUDES_FACTORIAL_H_
