@@ -1,6 +1,13 @@
 # cityMap
 SDP project, FMI
 
+### how to run
+    - $`make`: runs creates the necessary object and dependencies files,
+    compiles, then it runs the tests and runs the program itself
+    - $`make clean`: before commiting run  to clean unnecessary files like
+    object files and the exe
+    - $`make test` to build and run only the test
+
 ### make
     - https://stackoverflow.com/questions/30573481/path-include-and-src-directory-makefile/30602701
     - https://makefiletutorial.com/

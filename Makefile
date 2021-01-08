@@ -15,17 +15,6 @@ CPPFLAGS := $(CPPFLAGS) -MMD -MP
 
 CXXFLAGS := -Wall -Werror -std=c++20
 
-.PHONY: all clean
-
-all: $(EXE)
-## these two lines will save some typing for a while
-## remove later
-	@echo
-	@echo ==================================================================
-	@echo executing ./$(EXE):
-	@echo
-	@./$(EXE)
-
 $(EXE): $(OBJ)
 	$(CXX) $^ -o $@
 
@@ -36,7 +25,21 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 $(OBJ_DIR):
 	mkdir -p $@
 
+.PHONY: all clean test
+
+all: $(EXE)
+## these two lines will save some typing for a while
+## remove later
+	@echo
+	@echo ==================================================================
+	@echo executing ./$(EXE):
+	@echo
+	@./$(EXE)
+
 clean:
 	@$(RM) -rv $(EXE) $(OBJ_DIR)
+
+test: $(EXE)
+	@./$(EXE) -e
 
 -include $(OBJ:.o=.d)
