@@ -7,9 +7,16 @@ bool Graph::isNode(std::string name) {
   return nodes.find(name) == nodes.end();
 }
 
-TEST_CASE("Graph: isNewNode") {
-  Graph g;
-  SUBCASE("no such element") {
-    CHECK_EQ(g.isNode("test"), true);
+
+
+// https://github.com/onqtam/doctest/issues/427
+class GraphPrivateMethodsTests: public Graph{
+  using Graph = GraphPrivateMethodsTests;
+
+  TEST_CASE_CLASS("Graph: isNewNode") {
+    Graph g;
+    SUBCASE("no such element") {
+      CHECK_EQ(g.isNode("test"), true);
+    }
   }
-}
+};

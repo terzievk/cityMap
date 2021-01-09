@@ -9,7 +9,7 @@
 class Graph {
   std::unordered_map<std::string, std::unordered_map<std::string*, int>*> nodes;
 
- public:
+ protected:
   bool isNode(std::string name);
   void addNode(std::string name);
   std::string* getPointerToNode(std::string name);

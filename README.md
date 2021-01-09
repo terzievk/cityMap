@@ -4,8 +4,8 @@ SDP project, FMI
 ### how to run
     - $ `make` runs creates the necessary object and dependencies files,
     compiles, then it runs the tests and runs the program itself
-    - $ `make clean` before commiting run  to clean unnecessary files like
-    object files and the exe
+    - $ `make clean` ~~ before commiting run  to clean unnecessary files like
+    object files and the exe ~~ gitignore ignores them anyway
     - $ `make test` to build and run only the test
 
 ### make
@@ -22,3 +22,4 @@ SDP project, FMI
     - `./f -nr` runs only the programme
     - `./f -e` runs only the doctests
     - see more commands:  https://github.com/onqtam/doctest/blob/master/doc/markdown/commandline.md
+    - private methods testing workaround https://github.com/onqtam/doctest/issues/427
