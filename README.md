@@ -19,6 +19,7 @@ SDP project, FMI
     - `./f` runs both doctests and the programme itself
     - `./f -nr` runs only the programme
     - `./f -e` runs only the doctests
+    - `./f -ts=graph` runs only tests in suite graph `-ts   --test-suite=<filters>`
     - more commands: https://github.com/onqtam/doctest/blob/master/doc/markdown/commandline.md
 
 ### why add path to includes?

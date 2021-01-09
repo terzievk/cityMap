@@ -18,8 +18,8 @@ class Graph {
   auto getAdjacentEnd(std::string name);
 
   bool isAdjacentTo(std::string name, std::string adjacent);
-
   void addAdjacentTo(std::string name, std::string adjacent, int distance);
+
   friend class GraphPrivateMethodsTests;
 };
 
