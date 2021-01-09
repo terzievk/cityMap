@@ -4,7 +4,6 @@
 
 #include <unordered_map>
 #include <string>
-#include <cassert>
 
 class Graph {
   std::unordered_map<std::string, std::unordered_map<std::string*, int>*> nodes;
