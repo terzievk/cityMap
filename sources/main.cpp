@@ -1,19 +1,16 @@
 // Copyright
 #include <iostream>
-#include "../includes/factorial.h"
+#include <cassert>
 
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "../doctest/doctest.h"
 
-void testFactorial() {
-  Factorial f;
-  std::cout << f.get(1) << std::endl;
-  std::cout << f.get(2) << std::endl;
-  std::cout << f.get(3) << std::endl;
-  std::cout << f.get(4) << std::endl;
-  std::cout << f.get(5) << std::endl;
-}
+#include "../includes/factorial.h"
+#include "../includes/graph.h"
 
+
+void helper() {
+}
 
 int main(int argc, char *argv[]) {
   doctest::Context context;
@@ -23,10 +20,12 @@ int main(int argc, char *argv[]) {
   if (context.shouldExit()) {
     return res;
   }
-
+  //////////////////////////////////////////////////////////////////////////////
   std::cout << "Hello, World!\n";
-  testFactorial();
+  helper();
 
+
+  //////////////////////////////////////////////////////////////////////////////
   // int client_stuff_return_code = 0;
   // return res + client_stuff_return_code;
   return res;
