@@ -9,7 +9,6 @@
 class Graph {
   std::unordered_map<std::string, std::unordered_map<std::string*, int>*> nodes;
 
- protected:
   bool isNode(std::string name);
   void addNode(std::string name);
   std::string* getPointerToNode(std::string name);
@@ -22,6 +21,7 @@ class Graph {
   bool isAdjacentTo(std::string name, std::string adjacent);
 
   void addAdjacentTo(std::string name, std::string adjacent, int distance);
+  friend class GraphPrivateMethodsTests;
 };
 
 

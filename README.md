@@ -22,4 +22,4 @@ SDP project, FMI
     - `./f -nr` runs only the programme
     - `./f -e` runs only the doctests
     - see more commands:  https://github.com/onqtam/doctest/blob/master/doc/markdown/commandline.md
-    - private methods testing workaround https://github.com/onqtam/doctest/issues/427
+    - private methods testing workaround https://github.com/onqtam/doctest/issues/427, but with a friend for better encapsulation

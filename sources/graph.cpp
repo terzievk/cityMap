@@ -8,11 +8,8 @@ bool Graph::isNode(std::string name) {
 }
 
 
-
 // https://github.com/onqtam/doctest/issues/427
-class GraphPrivateMethodsTests: public Graph{
-  using Graph = GraphPrivateMethodsTests;
-
+class GraphPrivateMethodsTests{
   TEST_CASE_CLASS("Graph: isNewNode") {
     Graph g;
     SUBCASE("no such element") {
