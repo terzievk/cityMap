@@ -28,3 +28,7 @@ SDP project, FMI
 ### how to test private methods with doctest?
 - private methods testing workaround https://github.com/onqtam/doctest/issues/427,
 but with a friend for better encapsulation
+
+### `make` vs `make all`?
+- I thought `make` was an alias for `make all`. It is not. Apparantly make just builds
+the first target in the Makefile
