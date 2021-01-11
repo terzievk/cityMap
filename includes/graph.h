@@ -2,7 +2,9 @@
 #ifndef INCLUDES_GRAPH_H_
 #define INCLUDES_GRAPH_H_
 
+#include <list>
 #include <unordered_map>
+#include <utility>
 #include <string>
 
 class Graph {
@@ -32,6 +34,7 @@ class Graph {
   void print();
 
   bool isPath(Node from, std::optional<Node> to = std::optional<Node>());
+  std::list<std::pair<std::string, std::string>> getDeadEnds();
 };
 
 

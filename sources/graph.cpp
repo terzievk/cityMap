@@ -2,10 +2,15 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <cassert>  // "we've got exceptions at home, son"
-#include <unordered_set>
+
+#include <list>
 #include <queue>
+#include <unordered_set>
+
+#include <utility>
 #include <optional>
+
+#include <cassert>  // "we've got exceptions at home, son"
 
 #include "../includes/graph.h"
 #include "../doctest/doctest.h"
@@ -152,6 +157,30 @@ bool Graph::isPath(Node from, std::optional<Node> to) {
 
   // if they are not not equal
   return true;
+}
+
+std::list<std::pair<std::string, std::string>> Graph::getDeadEnds() {
+  std::unordered_set<Node> leafs;
+  for (auto nodePair : nodes) {
+    Node current{nodePair.first};
+    if (!hasAdjacentTo(current)) {
+      leafs.insert(current);
+    }
+  }
+
+  std::list<std::pair<Node, Node>> result;
+
+  for (auto nodePair : nodes) {
+    Node from{nodePair.first};
+    for (auto adjPair : *nodePair.second) {
+      Node to{adjPair.first};
+      if (leafs.contains(to)) {
+        result.push_back({from, to});
+      }
+    }
+  }
+
+  return result;
 }
 
 TEST_SUITE_BEGIN("graph");
@@ -310,6 +339,32 @@ TEST_CASE("isPath: mother") {
   CHECK(!graph.isPath("g"));
 }
 
+TEST_CASE("isPath: path") {
+  Graph graph{"./graphs/g1"};
+  //  std::cout << "here\n";
+  // g.print();
+
+  CHECK(graph.isPath("a", "b"));
+  CHECK(!graph.isPath("d", "b"));
+  CHECK(graph.isPath("a", "i"));
+  CHECK(!graph.isPath("i", "a"));
+}
+
+TEST_CASE("isPath: path") {
+  Graph g{"./graphs/g1"};
+
+  std::list<std::pair<std::string, std::string>> deadEnds{g.getDeadEnds()};
+
+  REQUIRE(!deadEnds.empty());
+
+  CHECK_EQ(deadEnds.size(), 3);
+
+  for (auto d : deadEnds) {
+    // CHECK((d == std::make_pair("a", "d")
+    //        || d == std::make_pair("g", "h")
+    //        || d == std::make_pair("g", "i")));
+  }
+}
 
 
 TEST_SUITE_END();  // graph

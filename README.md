@@ -91,10 +91,28 @@ That's how I found `std::optional`. here are a few cool links:
   - https://www.learncpp.com/cpp-tutorial/b-2-introduction-to-c14/
   - https://www.learncpp.com/cpp-tutorial/b-3-introduction-to-c17/
 
+### doctest doesn't like logic
+```
+    CHECK((d == std::make_pair("a", "d")
+           || d == std::make_pair("g", "h")
+           || d == std::make_pair("g", "i")));
+
+```
+
+```
+$ make 2> err
+    echo -Iincludes -Idoctest -MMD -MP
+    -Iincludes -Idoctest -MMD -MP
+    g++ -Iincludes -Idoctest -MMD -MP -Wall -Werror -std=c++20 -c sources/graph.cpp -o objects/graph.o
+$ wc err
+  2453  12544 181304 err
+
+```
 # the 7 requirements
 
 ### 1. is there a path between two nodes?
-- BFS: `isPath(from, to)`
+- BFS:
+`bool isPath(Node from, std::optional<Node> to = std::optional<Node>())`
 
 ### 2. k-th shortest paths
 - Yen's algorihtm with Dijkstra: to do
@@ -103,14 +121,17 @@ That's how I found `std::optional`. here are a few cool links:
 - same as 2: BFS: to do
 
 ### 4. is there a loop starting given node?
-- BFS from 1. : `isPath(from, from)`
+- BFS from 1. :
+`bool isPath(Node from, std::optional<Node> to = std::optional<Node>())`
 
 ### 5. find Euler's cycle?
 - Hierholzer's algorithm: to do
 
 ### 6. is Mother? (there is a path from it to all the rest)
-- same as 1. and 4. BFS: `isPath(from);`
+- same as 1. and 4. BFS:
+`bool isPath(Node from, std::optional<Node> to = std::optional<Node>())`
 
 ### 7. find all dead ends?
 - get all the nodes with no adjacent to nodes. check if any node 
-is adjacent to one of those: to do
+is adjacent to one of those:
+`std::list<std::pair<std::string, std::string>> getDeadEnds()`
