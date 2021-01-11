@@ -51,8 +51,8 @@ I guess the compiler does a pretty good job at optimising the memory anyway...
 ### how to run
 - `make` runs creates the necessary object and dependencies files,
     compiles, then it runs the tests and runs the program itself
-- `make clean` ~~ before commiting run  to clean unnecessary files like
-    object files and the exe ~~ gitignore ignores them anyway
+- `make clean` ~~before commiting run  to clean unnecessary files like
+    object files and the exe~~ gitignore ignores them anyway
 - `make test` to build and run only the test
 
 ### make
@@ -124,14 +124,14 @@ $ wc err
 - BFS from 1. :
 `bool isPath(Node from, std::optional<Node> to = std::optional<Node>())`
 
-### 5. find Euler's cycle?
+### 5. find Euler's cycle
 - Hierholzer's algorithm: to do
 
 ### 6. is Mother? (there is a path from it to all the rest)
 - same as 1. and 4. BFS:
 `bool isPath(Node from, std::optional<Node> to = std::optional<Node>())`
 
-### 7. find all dead ends?
+### 7. find all dead ends
 - get all the nodes with no adjacent to nodes. check if any node 
 is adjacent to one of those:
 `std::list<std::pair<std::string, std::string>> getDeadEnds()`
