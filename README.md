@@ -1,5 +1,42 @@
 # cityMap
 SDP project, FMI
+### what's my data structure?
+As Benjamin Franklin famously wrote in 1789, in a letter to Jean-Baptiste Le Roy, 
+who, among other things, was one of the contributors, known as Encyclopédistes,
+with 108 articles to  the Encyclopédie, which was co-edited by the famous and
+beloved by many students, althought now as much as, among others, Isaac Newton or
+Augustin-Louis Cauchy, Jean le Rond d'Alembert, who contributed to the same 
+Encyclopédie with 1309 articles, which is an impressive amount, but somewhat
+diminished by the 17288 articles, about 1/4,  contributed by the most prolific
+Encyclopédistes - Louis de Jaucourt:
+
+```
+    Our new Constitution is now established, and has an appearance that promises
+    permanency; but in this world nothing can be said to be certain,
+    except death and taxes.
+```
+
+Anyway.
+As I was questioning my approach to solving the given problems in this project I thought
+about other certainties in life, which might help me with my project. I could find any,
+but I remembered three, which come as close as it gets:
+- If you don't know a word, there is a good chance you can find it in a dictionary.
+Here is a good one: https://ibl.bas.bg/rbe/
+
+- If you don't know how to solve an integral, try integration by parts.
+
+- If you have a data structures and algorithms problem, optimal solution is gonna have
+binary search or hash tables.
+
+Based on the last close to universal certainty, I picked my adjacency list to be of type
+```
+  using Node = std::string;
+  using Distance = int;
+  using AdjacentTo = std::unordered_map<Node, Distance>;
+
+  std::unordered_map<Node, AdjacentTo*> nodes;
+
+```
 
 ### how to run
 - `make` runs creates the necessary object and dependencies files,
