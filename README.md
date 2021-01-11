@@ -109,7 +109,7 @@ That's how I found `std::optional`. here are a few cool links:
 - Hierholzer's algorithm: to do
 
 ### 6. is Mother? (there is a path from it to all the rest)
-- same as 1. and 2. BFS: `isPath(from);`
+- same as 1. and 4. BFS: `isPath(from);`
 
 ### 7. find all dead ends?
 - get all the nodes with no adjacent to nodes. check if any node 
