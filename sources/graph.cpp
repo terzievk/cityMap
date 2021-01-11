@@ -1,7 +1,7 @@
 // Copyright
-#include <unordered_set>
 #include <cassert>  // "we've got exceptions at home, son"
-#include <iostream>
+#include <unordered_set>
+#include <queue>
 
 
 #include "../includes/graph.h"
@@ -53,6 +53,33 @@ Graph::~Graph() {
   for (auto elem : nodes) {
     delete elem.second;
   }
+}
+
+
+bool Graph::isPath(Node from, Node to) {
+  // BFS
+  std::queue<Node> q;
+  q.push(from);
+  std::unordered_set<Node> visited;
+  visited.insert(from);
+
+  while (!q.empty()) {
+    Node current {q.front()};
+    q.pop();
+    visited.insert(current);
+    for (auto pairs : *getAdjacentToPointer(current)) {
+      Node adj{pairs.first};
+      if (adj == to) {
+        return true;
+      }
+      if (!visited.contains(adj)) {
+        q.push(adj);
+        visited.insert(adj);
+      }
+    }
+  }
+
+  return false;
 }
 
 TEST_SUITE_BEGIN("graph");
