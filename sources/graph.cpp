@@ -5,7 +5,7 @@
 #include <cassert>  // "we've got exceptions at home, son"
 #include <unordered_set>
 #include <queue>
-
+#include <optional>
 
 #include "../includes/graph.h"
 #include "../doctest/doctest.h"
@@ -105,7 +105,7 @@ void Graph::addEdge(Node from, Node to, Distance distance) {
 }
 
 
-bool Graph::isPath(Node from, Node to) {
+bool Graph::isPath(Node from, std::optional<Node> to) {
   // BFS
   std::queue<Node> q;
   q.push(from);
@@ -118,7 +118,7 @@ bool Graph::isPath(Node from, Node to) {
     visited.insert(current);
     for (auto pairs : *getAdjacentToPointer(current)) {
       Node adj{pairs.first};
-      if (adj == to) {
+      if (to.has_value() && adj == to) {
         return true;
       }
       if (!visited.contains(adj)) {
@@ -128,7 +128,30 @@ bool Graph::isPath(Node from, Node to) {
     }
   }
 
-  return false;
+  // when isPair is called with two arguments
+  if (to.has_value()) {
+    return false;
+  }
+
+  // check if the visited and nodes sets are equal
+  if (visited.size() != nodes.size()) {
+    return false;
+  }
+
+  for (auto nodePair : nodes) {
+    if (!visited.contains(nodePair.first)) {
+      return false;
+    }
+  }
+
+  for (auto v : visited) {
+    if (!nodes.contains(v)) {
+      return false;
+    }
+  }
+
+  // if they are not not equal
+  return true;
 }
 
 TEST_SUITE_BEGIN("graph");
@@ -256,7 +279,7 @@ class GraphPrivateMethodsTests {
   }
 };
 
-TEST_CASE("graph") {
+TEST_CASE("isPath: path") {
   Graph graph{"./graphs/g1"};
   //  std::cout << "here\n";
   // g.print();
@@ -265,6 +288,26 @@ TEST_CASE("graph") {
   CHECK(!graph.isPath("d", "b"));
   CHECK(graph.isPath("a", "i"));
   CHECK(!graph.isPath("i", "a"));
+}
+
+TEST_CASE("isPath: loop") {
+  Graph graph{"./graphs/g1"};
+  //  std::cout << "here\n";
+  // g.print();
+
+  CHECK(graph.isPath("a", "a"));
+  CHECK(graph.isPath("b", "b"));
+  CHECK(!graph.isPath("g", "g"));
+}
+
+TEST_CASE("isPath: mother") {
+  Graph graph{"./graphs/g1"};
+  //  std::cout << "here\n";
+  // g.print();
+
+  CHECK(graph.isPath("a"));
+  CHECK(graph.isPath("b"));
+  CHECK(!graph.isPath("g"));
 }
 
 

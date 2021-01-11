@@ -10,6 +10,9 @@
 
 
 void helper() {
+  Graph g{"./graphs/g1"};
+  std::cout << g.isPath("a", "f") << std::endl;
+  std::cout << g.isPath("a", "a") << std::endl;
 }
 
 int main(int argc, char *argv[]) {

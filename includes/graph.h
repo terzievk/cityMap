@@ -31,7 +31,7 @@ class Graph {
 
   void print();
 
-  bool isPath(Node from, Node to);
+  bool isPath(Node from, std::optional<Node> to = std::optional<Node>());
 };
 
 
