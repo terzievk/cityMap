@@ -37,14 +37,16 @@ Based on the last close to universal certainty, I picked my adjacency list to be
   std::unordered_map<Node, AdjacentTo*> nodes;
 
 ```
-### why are the nodes in AdjacentTo not references?
+### why are the nodes in AdjacentTo not references/pointers?
 std::unordered_map guarantees  ` References and pointers to either key or data
 stored in the container are only invalidated by erasing that element, even when
 the corresponding iterator is invalidated. ` So the adjacentTo nodes could be
 references to the nodes in the nodes map, but too much early optimisation
-is not cool
+is not cool.
+Plus I don't know how exactly std::string works.
+I guess the compiler does a pretty good job at optimising the memory anyway...
 
-![](https://xkcd.com/1691/)
+![xkcd](https://xkcd.com/1691/)
 
 ### how to run
 - `make` runs creates the necessary object and dependencies files,
