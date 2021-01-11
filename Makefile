@@ -24,7 +24,7 @@ all: $(EXE)
 	@echo ==================================================================
 	@echo executing ./$(EXE):
 	@echo
-	./$(EXE)
+	@./$(EXE)
 
 clean:
 	@$(RM) -rv $(EXE) $(OBJ_DIR)

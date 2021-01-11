@@ -6,22 +6,29 @@
 #include <string>
 
 class Graph {
-  std::unordered_map<std::string, std::unordered_map<std::string*, int>*> nodes;
+  using Node = std::string;
+  using Distance = int;
+  using AdjacentTo = std::unordered_map<Node, Distance>;
 
-  bool isNode(std::string name);
-  void addNode(std::string name);
-  std::string* getPointerToNode(std::string name);
+  std::unordered_map<Node, AdjacentTo*> nodes;
 
-  bool hasAdjacent(std::string name);
+  bool isNode(Node);
+  void addNode(Node);
 
-  auto getAdjacentBegin(std::string name);
-  auto getAdjacentEnd(std::string name);
+  bool hasAdjacentTo(Node);
+  AdjacentTo* getAdjacentToPointer(Node);
 
-  bool isAdjacentTo(std::string name, std::string adjacent);
-  void addAdjacentTo(std::string name, std::string adjacent, int distance);
+  bool isEdge(Node from, Node to);
+  int getDistance(Node from, Node to);
+  void addEdge(Node from, Node to, Distance);
 
   friend class GraphPrivateMethodsTests;
+
+ public:
+  ~Graph();
+  bool isPath(Node from, Node to);
 };
+
 
 
 #endif  // INCLUDES_GRAPH_H_
