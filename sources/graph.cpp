@@ -1,4 +1,7 @@
 // Copyright
+#include <fstream>
+#include <sstream>
+#include <iostream>
 #include <cassert>  // "we've got exceptions at home, son"
 #include <unordered_set>
 #include <queue>
@@ -6,6 +9,58 @@
 
 #include "../includes/graph.h"
 #include "../doctest/doctest.h"
+
+Graph::Graph(std::string filename) {
+  // assume correctly formatted input
+  std::ifstream input(filename);
+  // throw exception if we couldn't open the file
+  if (!input) {
+    std::cout << "wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww\n";
+  }  // does this look like an exception??
+  while (input) {
+    std::string line;
+    std::getline(input, line);
+    // well formanted files finish with '\n' after the last line
+    if (!line.empty()) {
+      std::stringstream ss;
+      ss << line;
+      std::string from;
+      ss >> from;
+      addNode(from);
+      while (ss) {
+        std::string to;
+        ss >> to;
+
+        if (to.empty()) {  // handle the end of the line
+          break;
+        }
+
+        int dist;
+        ss >> dist;
+
+        addEdge(from, to, dist);
+      }
+    }
+  }
+
+  input.close();
+}
+
+Graph::~Graph() {
+  for (auto elem : nodes) {
+    delete elem.second;
+  }
+}
+
+void Graph::print() {
+  for (auto fromPair : nodes) {
+    std::cout << "from: " << fromPair.first;
+    for (auto toPair : *fromPair.second) {
+      std::cout << " to: " << toPair.first << ", " << toPair.second;
+    }
+    std::cout << std::endl;
+  }
+}
 
 bool Graph::isNode(Node n) {
   return nodes.find(n) != nodes.end();
@@ -47,12 +102,6 @@ void Graph::addEdge(Node from, Node to, Distance distance) {
 
   // will do nothing if such adjacent node exists
   getAdjacentToPointer(from)->insert({to, distance});
-}
-
-Graph::~Graph() {
-  for (auto elem : nodes) {
-    delete elem.second;
-  }
 }
 
 
@@ -206,5 +255,18 @@ class GraphPrivateMethodsTests {
     }
   }
 };
+
+TEST_CASE("graph") {
+  Graph graph{"./graphs/g1"};
+  //  std::cout << "here\n";
+  // g.print();
+
+  CHECK(graph.isPath("a", "b"));
+  CHECK(!graph.isPath("d", "b"));
+  CHECK(graph.isPath("a", "i"));
+  CHECK(!graph.isPath("i", "a"));
+}
+
+
 
 TEST_SUITE_END();  // graph

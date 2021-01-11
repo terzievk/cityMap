@@ -22,10 +22,15 @@ class Graph {
   int getDistance(Node from, Node to);
   void addEdge(Node from, Node to, Distance);
 
+  Graph() {}  // used only in tests
   friend class GraphPrivateMethodsTests;
 
  public:
+  explicit Graph(std::string filename);
   ~Graph();
+
+  void print();
+
   bool isPath(Node from, Node to);
 };
 
