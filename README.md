@@ -17,16 +17,16 @@ Encyclopédistes - Louis de Jaucourt:
 ```
 
 Anyway.
-As I was questioning my approach to solving the given problems in this project I thought
-about other certainties in life, which might help me with my project. I could find any,
-but I remembered three, which come as close as it gets:
-- If you don't know a word, there is a good chance you can find it in a dictionary.
+As I was questioning my approach to solving the given problems in this project,
+I thought about other certainties in life, which might help me with my project.
+I couldn't find any, but I remembered three, which come as close as it gets:
+- If you don't know a word, you can find it in the dictionary.
 Here is a good one: https://ibl.bas.bg/rbe/
 
-- If you don't know how to solve an integral, try integration by parts.
+- If you don't know how to solve an integral, integration by parts.
 
-- If you have a data structures and algorithms problem, optimal solution is gonna have
-binary search or hash tables.
+- If you have a data structures and algorithms problem,
+binary search and/or hash tables.
 
 Based on the last close to universal certainty, I picked my adjacency list to be of type
 ```
