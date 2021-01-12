@@ -123,7 +123,7 @@ bool Graph::isPath(Node from, std::optional<Node> to) {
     visited.insert(current);
     for (auto pairs : *getAdjacentToPointer(current)) {
       Node adj{pairs.first};
-      if (to.has_value() && adj == to) {
+      if (to.has_value() && adj == *to) {
         return true;
       }
       if (!visited.contains(adj)) {
@@ -143,12 +143,10 @@ bool Graph::isPath(Node from, std::optional<Node> to) {
     return false;
   }
 
-  for (auto nodePair : nodes) {
-    if (!visited.contains(nodePair.first)) {
-      return false;
-    }
-  }
-
+  // since we are fillign visited from nodes' first values, this is
+  // redundant too,  but I will leave it for mathematical correctness
+  // plus it's one more check on whether each node in the graph is in
+  // nodes' first
   for (auto v : visited) {
     if (!nodes.contains(v)) {
       return false;
