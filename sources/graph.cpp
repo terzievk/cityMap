@@ -306,63 +306,44 @@ class GraphPrivateMethodsTests {
   }
 };
 
-TEST_CASE("isPath: path") {
-  Graph graph{"./graphs/g1"};
-  //  std::cout << "here\n";
-  // g.print();
-
-  CHECK(graph.isPath("a", "b"));
-  CHECK(!graph.isPath("d", "b"));
-  CHECK(graph.isPath("a", "i"));
-  CHECK(!graph.isPath("i", "a"));
-}
-
-TEST_CASE("isPath: loop") {
-  Graph graph{"./graphs/g1"};
-  //  std::cout << "here\n";
-  // g.print();
-
-  CHECK(graph.isPath("a", "a"));
-  CHECK(graph.isPath("b", "b"));
-  CHECK(!graph.isPath("g", "g"));
-}
-
-TEST_CASE("isPath: mother") {
-  Graph graph{"./graphs/g1"};
-  //  std::cout << "here\n";
-  // g.print();
-
-  CHECK(graph.isPath("a"));
-  CHECK(graph.isPath("b"));
-  CHECK(!graph.isPath("g"));
-}
-
-TEST_CASE("isPath: path") {
-  Graph graph{"./graphs/g1"};
-  //  std::cout << "here\n";
-  // g.print();
-
-  CHECK(graph.isPath("a", "b"));
-  CHECK(!graph.isPath("d", "b"));
-  CHECK(graph.isPath("a", "i"));
-  CHECK(!graph.isPath("i", "a"));
-}
-
-TEST_CASE("isPath: path") {
+TEST_CASE("public") {
   Graph g{"./graphs/g1"};
+  //  std::cout << "here\n";
+  // g.print();
 
-  std::list<std::pair<std::string, std::string>> deadEnds{g.getDeadEnds()};
+  SUBCASE("isPath: path") {
+    CHECK(g.isPath("a", "b"));
+    CHECK(g.isPath("a", "i"));
+    CHECK(!g.isPath("d", "b"));
+    CHECK(!g.isPath("i", "a"));
+  }
 
-  REQUIRE(!deadEnds.empty());
+  SUBCASE("isPath: loop") {
+    CHECK(g.isPath("a", "a"));
+    CHECK(g.isPath("b", "b"));
+    CHECK(!g.isPath("g", "g"));
+  }
 
-  CHECK_EQ(deadEnds.size(), 3);
+  SUBCASE("isPath: mother") {
+    CHECK(g.isPath("a"));
+    CHECK(g.isPath("b"));
+    CHECK(!g.isPath("g"));
+  }
 
-  // sort this manually
-  std::list<std::pair<std::string, std::string>> expectedResult {{"a", "d"},
-                                                                 {"g", "h"},
-                                                                 {"g", "i"}};
-  deadEnds.sort();
-  CHECK_EQ(deadEnds, expectedResult);
+  SUBCASE("") {
+    std::list<std::pair<std::string, std::string>> deadEnds{g.getDeadEnds()};
+
+    REQUIRE(!deadEnds.empty());
+
+    CHECK_EQ(deadEnds.size(), 3);
+
+    // sort this manually
+    std::list<std::pair<std::string, std::string>> expectedResult {{"a", "d"},
+                                                                   {"g", "h"},
+                                                                   {"g", "i"}};
+    deadEnds.sort();
+    CHECK_EQ(deadEnds, expectedResult);
+  }
 }
 
 
