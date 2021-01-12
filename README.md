@@ -80,7 +80,7 @@ but with a friend for better encapsulation
 - I thought `make` was an alias for `make all`. It is not. Apparantly make just builds
 the first target in the Makefile
 
-### how to reduce code redundancy since 1., 2., and 6. are pretty much the same?
+### how to reduce code redundancy since 1., 4., and 6. are pretty much the same?
 - when I was planning how I was going to make my project(which, unlike the
 coding part, I didn't leave to the very end - in fact just the opposite) I
 thought it would be cool to check what's new in the different c++ versions.
