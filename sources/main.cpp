@@ -5,7 +5,6 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "../doctest/doctest.h"
 
-#include "../includes/factorial.h"
 #include "../includes/graph.h"
 
 
