@@ -9,13 +9,6 @@
 
 
 void helper() {
-  Graph g{"./graphs/g1"};
-  std::list<std::pair<std::string, std::string>> deadEnds{g.getDeadEnds()};
-
-  std::cout << "dead ends (from, to):\n";
-  for (auto p : deadEnds) {
-    std::cout << p.first << ' ' << p.second << std::endl;
-  }
 }
 
 int main(int argc, char *argv[]) {

@@ -357,11 +357,12 @@ TEST_CASE("isPath: path") {
 
   CHECK_EQ(deadEnds.size(), 3);
 
-  for (auto d : deadEnds) {
-    // CHECK((d == std::make_pair("a", "d")
-    //        || d == std::make_pair("g", "h")
-    //        || d == std::make_pair("g", "i")));
-  }
+  // sort this manually
+  std::list<std::pair<std::string, std::string>> expectedResult {{"a", "d"},
+                                                                 {"g", "h"},
+                                                                 {"g", "i"}};
+  deadEnds.sort();
+  CHECK_EQ(deadEnds, expectedResult);
 }
 
 
