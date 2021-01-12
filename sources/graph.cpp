@@ -68,7 +68,7 @@ void Graph::print() {
 }
 
 bool Graph::isNode(Node n) {
-  return nodes.find(n) != nodes.end();
+  return nodes.contains(n);
 }
 
 void Graph::addNode(Node n) {
