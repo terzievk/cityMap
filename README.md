@@ -37,6 +37,18 @@ Based on the last close to universal certainty, I picked my adjacency list to be
   std::unordered_map<Node, AdjacentTo*> nodes;
 
 ```
+### Why unordered_map(hash table)? Why not map(red-black tree) or vector(dynamic array)?
+# don't forget to write this
+- https://www.bigocheatsheet.com/
+
+### Why not use an adjacency matrix?
+Because in a city, most of the crossroads aren't adjacent, and the graph would be
+too sparse to justify the used memory.
+
+### Is moving the adjacency list from unordered map to vector justified?
+Hash tables have better average search/insertion/deletion than dynamic arrays,
+and they are better for reading the graph. 
+
 ### why are the nodes in AdjacentTo not references/pointers?
 std::unordered_map guarantees  ` References and pointers to either key or data
 stored in the container are only invalidated by erasing that element, even when

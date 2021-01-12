@@ -181,6 +181,7 @@ std::list<std::pair<std::string, std::string>> Graph::getDeadEnds() {
   return result;
 }
 
+
 TEST_SUITE_BEGIN("graph");
 
 // https://github.com/onqtam/doctest/issues/427
