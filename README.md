@@ -135,6 +135,7 @@ but maybe to others too
 ### 5. find Euler's cycle
 - Hierholzer's algorithm: 
 `std::optional<std::list<std::string>> findEulerianPath();`
+    - if we need a cycle, the first and last elements of the list, should be the same
 
 ### 6. is Mother? (there is a path from it to all the rest)
 - same as 1. and 4. BFS:
