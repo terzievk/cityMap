@@ -92,18 +92,8 @@ but with a friend for better encapsulation
 - I thought `make` was an alias for `make all`. It is not. Apparantly make just builds
 the first target in the Makefile
 
-### how to reduce code redundancy since 1., 4., and 6. are pretty much the same?
-- when I was planning how I was going to make my project(which, unlike the
-coding part, I didn't leave to the very end - in fact just the opposite) I
-thought it would be cool to check what's new in the different c++ versions.
-That's how I found `std::optional`. here are a few cool links:
-  - https://isocpp.org/files/papers/p1319r0.html
-  - https://isocpp.org/files/papers/p0636r0.html
-  - https://www.learncpp.com/cpp-tutorial/b-1-introduction-to-c11/
-  - https://www.learncpp.com/cpp-tutorial/b-2-introduction-to-c14/
-  - https://www.learncpp.com/cpp-tutorial/b-3-introduction-to-c17/
-
 ### doctest doesn't like logic
+These three lines caused a big fuss:
 ```
     CHECK((d == std::make_pair("a", "d")
            || d == std::make_pair("g", "h")
@@ -120,6 +110,12 @@ $ wc err
   2453  12544 181304 err
 
 ```
+
+### a few test might give false negative?
+a few tests compare the returned list with prechecked lists of results,
+which sort of relies on the deterministic properties of the unordered_map iterator,
+but maybe to others too
+
 # the 7 requirements
 
 ### 1. is there a path between two nodes?
@@ -130,14 +126,15 @@ $ wc err
 - Yen's algorihtm with Dijkstra: to do
 
 ### 3. k-th shortest paths with list of closed
-- same as 2: BFS: to do
+- same as 2: Yen's: to do
 
 ### 4. is there a loop starting given node?
 - BFS from 1. :
 `bool isPath(Node from, std::optional<Node> to = std::optional<Node>())`
 
 ### 5. find Euler's cycle
-- Hierholzer's algorithm: to do
+- Hierholzer's algorithm: 
+`std::optional<std::list<std::string>> findEulerianPath();`
 
 ### 6. is Mother? (there is a path from it to all the rest)
 - same as 1. and 4. BFS:

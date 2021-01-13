@@ -181,6 +181,150 @@ std::list<std::pair<std::string, std::string>> Graph::getDeadEnds() {
   return result;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+void Graph::fillInOut(std::unordered_map<Node, std::pair<int, int>> *inOut) {
+  // add each node to inOut and count the out nodes;
+  for (auto nodePair : nodes) {
+    inOut->insert({nodePair.first, {0, nodePair.second->size()}});
+  }
+  for (auto nodePair : nodes) {
+    for (auto adjPair : *nodePair.second) {
+      // ++ in
+      ++inOut->find(adjPair.first)->second.first;
+    }
+  }
+}
+
+bool Graph::isEulerianPath(std::unordered_map<Node,
+                           std::pair<int, int>> *inOut) {
+  int numberOfStartNodes{};
+  int numberOfEndNodes{};
+
+  for (auto each : *inOut) {
+    int in{each.second.first};
+    int out{each.second.second};
+    int dif{in - out};
+
+    switch (dif) {
+      case +1: {  // one more going in than out
+        ++numberOfEndNodes;
+        break;
+      }
+      case -1: {  // one more going out than in
+        ++numberOfStartNodes;
+        break;
+      }
+      case 0: {  // same number going in and out
+        break;
+      }
+      default: {  // no Eulerian path
+        return false;
+      }
+    }
+  }
+
+  // if no Eulerian cycle or Eulerian path
+  if (!((numberOfStartNodes == 0 && numberOfEndNodes == 0) ||  // hmm De Morgan
+        (numberOfStartNodes == 1 && numberOfEndNodes == 1))) {
+    // too many starting or finishing nodes - still no path
+    return false;
+  }
+  return true;
+}
+
+Graph::Node Graph::findStartingNode(std::unordered_map<Node,
+                                    std::pair<int, int>> *inOut) {
+  for (auto each : *inOut) {
+    int in{each.second.first};
+    int out{each.second.second};
+    if (out - in == 1) {  // at most there should be only one such element
+      return each.first;
+    }
+  }
+
+  // if no starting element, there is a cycle
+  // just pick a node with edge going out
+  // we know there is an edge going out, because we have checked in
+  // findEulerianPath() if the numberOfEdges is 0
+  for (auto each : *inOut) {
+    int out{each.second.second};
+    if (out) {
+      return each.first;
+    }
+  }
+  assert(false && "shouldn't reach here");
+  return "";
+}
+
+void Graph::hierholzerDFSHelper(Node from, std::list<Node> *result,
+                                std::set<std::pair<Node, Node>> *visited) {
+  for (auto adjPair : *getAdjacentToPointer(from)) {
+    Node to {adjPair.first};
+    if (!visited->contains({from, to})) {
+      visited->insert({from, to});
+      hierholzerDFSHelper(to, result, visited);
+    }
+  }
+  result->push_front(from);
+}
+
+std::optional<std::list<Graph::Node>> Graph::findEulerianPath() {
+
+  // for each node count the in and out edges
+  std::unordered_map<Node, std::pair<int, int>> inOut;
+  fillInOut(&inOut);
+
+  int numberOfEdges{};
+  // count all the edges
+  for (auto elem : inOut) {
+    numberOfEdges += elem.second.second;
+  }
+
+  // how would there be a path, if there are no edges
+  if (!numberOfEdges) {
+    return std::nullopt;
+  }
+
+  // check if there is an Eulerian path?
+  if (!isEulerianPath(&inOut)) {
+    return std::nullopt;
+  }
+
+  std::list<Node> result;
+  std::set<std::pair<Node, Node>> visited;
+
+  hierholzerDFSHelper(findStartingNode(&inOut), &result, &visited);
+
+  // if we have disconnected components, there should be left unvisited nodes
+  if (static_cast<int>(visited.size()) == numberOfEdges) {
+    return result;
+  }
+
+  return std::nullopt;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 
 TEST_SUITE_BEGIN("graph");
 
@@ -307,7 +451,7 @@ class GraphPrivateMethodsTests {
   }
 };
 
-TEST_CASE("public") {
+TEST_CASE("g1") {
   Graph g{"./graphs/g1"};
   //  std::cout << "here\n";
   // g.print();
@@ -338,14 +482,71 @@ TEST_CASE("public") {
 
     CHECK_EQ(deadEnds.size(), 3);
 
-    // sort this manually
+    // sorted this manually
     std::list<std::pair<std::string, std::string>> expectedResult {{"a", "d"},
                                                                    {"g", "h"},
                                                                    {"g", "i"}};
     deadEnds.sort();
     CHECK_EQ(deadEnds, expectedResult);
   }
+
+  SUBCASE("Eulerian path") {
+    std::optional<std::list<std::string>> result{g.findEulerianPath()};
+    if (result.has_value()) {
+      for (auto element : *result) {
+        std::cout << element << ' ';
+      }
+      std::cout << std::endl;
+    } else {
+      std::cout << "no eulerian path\n";
+    }
+  }
 }
+
+TEST_CASE("g2: linked list") {
+  Graph g{"./graphs/g2"};
+
+  SUBCASE("Eulerian path") {
+    std::optional<std::list<std::string>> result{g.findEulerianPath()};
+    CHECK(result.has_value());
+    std::list<std::string> correctResult{"a", "b", "c", "d", "e"};
+    CHECK_EQ(result, correctResult);
+  }
+}
+
+TEST_CASE("g3: eulerian path with a few loops") {
+  Graph g{"./graphs/g3"};
+
+  SUBCASE("Eulerian path") {
+    std::optional<std::list<std::string>> result{g.findEulerianPath()};
+    CHECK(result.has_value());
+    std::list<std::string> correctResult{"f", "g", "h", "i", "f", "d", "a",
+      "b", "c", "d", "e"};
+    CHECK_EQ(result, correctResult);
+  }
+}
+
+TEST_CASE("g4: no edges") {
+  Graph g{"./graphs/g4"};
+
+  SUBCASE("Eulerian path") {
+    std::optional<std::list<std::string>> result{g.findEulerianPath()};
+    CHECK(!result.has_value());
+  }
+}
+
+TEST_CASE("g5: cycle with two loops") {
+  Graph g{"./graphs/g5"};
+
+  SUBCASE("Eulerian path") {
+    std::optional<std::list<std::string>> result{g.findEulerianPath()};
+    CHECK(result.has_value());
+    std::list<std::string> correctResult{"a", "e", "f", "g", "a", "b", "c",
+      "d", "a"};
+    CHECK_EQ(result, correctResult);
+  }
+}
+
 
 
 TEST_SUITE_END();  // graph

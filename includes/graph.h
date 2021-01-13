@@ -2,10 +2,12 @@
 #ifndef INCLUDES_GRAPH_H_
 #define INCLUDES_GRAPH_H_
 
+#include <set>
 #include <list>
 #include <unordered_map>
-#include <utility>
+
 #include <string>
+#include <utility>
 
 class Graph {
   using Node = std::string;
@@ -24,6 +26,13 @@ class Graph {
   int getDistance(Node from, Node to);
   void addEdge(Node from, Node to, Distance);
 
+  // Hierholzer's algorithm helpers
+  void fillInOut(std::unordered_map<Node, std::pair<int, int>> *inOut);
+  bool isEulerianPath(std::unordered_map<Node, std::pair<int, int>> *inOut);
+  Node findStartingNode(std::unordered_map<Node, std::pair<int, int>> *inOut);
+  void hierholzerDFSHelper(Node from, std::list<Node> *result,
+                           std::set<std::pair<Node, Node>> *visited);
+
   Graph() {}  // used only in tests
   friend class GraphPrivateMethodsTests;
 
@@ -35,8 +44,7 @@ class Graph {
 
   bool isPath(Node from, std::optional<Node> to = std::optional<Node>());
   std::list<std::pair<std::string, std::string>> getDeadEnds();
+  std::optional<std::list<std::string>> findEulerianPath();
 };
-
-
 
 #endif  // INCLUDES_GRAPH_H_
