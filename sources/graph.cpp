@@ -344,8 +344,9 @@ std::optional<std::list<Graph::Node>> Graph::findEulerianPath() {
   }
 */
 
-std::optional<std::list<std::string>> Graph::findShortestPath(Node from,
-                                                              Node to) {
+std::optional<std::list<std::string>>
+Graph::findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore,
+                        std::set<std::pair<Node, Node>> edgesToIgnore) {
   std::unordered_map<Node, Distance> d;
   for (auto NodePair : nodes) {
     d.insert({NodePair.first, INT_MAX});
@@ -372,6 +373,10 @@ std::optional<std::list<std::string>> Graph::findShortestPath(Node from,
     for (auto adjPair : *getAdjacentToPointer(v)) {
       Node to {adjPair.first};
       Distance len = {adjPair.second};
+      if (nodesToIgnore.contains(to) ||
+          edgesToIgnore.contains({v, to})) {
+        continue;
+      }
 
       if (d[v] + len < d[to]) {
         d[to] = d[v] + len;
@@ -635,7 +640,10 @@ TEST_CASE("g6: g1 with extra nodes") {
   g.print();
 
   SUBCASE("shortest path") {
-    std::optional<std::list<std::string>> result{g.findShortestPath("b", "a")};
+    std::set<std::string> nodesToIgnore{"c"};
+    std::set<std::pair<std::string, std::string>> edgesToIgnore{{"f", "a"}};
+    std::optional<std::list<std::string>> result;
+    result = g.findShortestPath("b", "a", nodesToIgnore, edgesToIgnore);
     if (result.has_value()) {
       for (auto element : *result) {
         std::cout << element << ' ';
