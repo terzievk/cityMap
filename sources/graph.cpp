@@ -305,7 +305,7 @@ std::optional<std::list<Graph::Node>> Graph::findEulerianPath() {
   return std::nullopt;
 }
 
-std::optional<std::list<std::string>>
+std::optional<std::pair<int, std::list<std::string>>>
 Graph::findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore,
                         std::set<std::pair<Node, Node>> edgesToIgnore) {
   std::unordered_map<Node, Distance> d;
@@ -360,8 +360,15 @@ Graph::findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore,
   }
   result.push_front(from);
 
-  return result;
+  // return a pair of the distance and the path itself
+  return std::make_pair(d[to], result);
 }
+
+// std::vector<std::optional<std::list<std::string>>>
+// Graph::kTHShortestPath(Node from, Node to) {
+
+// }
+
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -500,22 +507,26 @@ class GraphPrivateMethodsTests {
 
   TEST_CASE_CLASS("g6: shortest path") {
     Graph g{"./graphs/g6"};
-    std::optional<std::list<std::string>> result;
+    std::optional<std::pair<int, std::list<std::string>>> result;
 
     SUBCASE("path 1") {
       result = g.findShortestPath("k", "a");
       CHECK(result.has_value());
 
-      std::list<std::string> correctResult{"k", "c", "g", "i", "f", "a"};
-      CHECK_EQ(*result, correctResult);
+      int correctResultDistance {20};
+      std::list<std::string> correctResultPath{"k", "c", "g", "i", "f", "a"};
+      CHECK_EQ(result->first, correctResultDistance);
+      CHECK_EQ(result->second, correctResultPath);
     }
 
     SUBCASE("path 2") {
       result = g.findShortestPath("b", "a");
       CHECK(result.has_value());
 
+      int correctResultDistance {19};
       std::list<std::string> correctResult{"b", "c", "g", "i", "f", "a"};
-      CHECK_EQ(*result, correctResult);
+      CHECK_EQ(result->first, correctResultDistance);
+      CHECK_EQ(result->second, correctResult);
     }
 
 
@@ -530,7 +541,6 @@ class GraphPrivateMethodsTests {
       result = g.findShortestPath("h", "a");
       CHECK(!result.has_value());
     }
-
   }
 };
 

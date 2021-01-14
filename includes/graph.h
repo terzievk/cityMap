@@ -4,6 +4,7 @@
 
 #include <set>
 #include <list>
+#include <vector>
 #include <unordered_map>
 
 #include <string>
@@ -26,7 +27,7 @@ class Graph {
   int getDistance(Node from, Node to);
   void addEdge(Node from, Node to, Distance);
 
-  std::optional<std::list<std::string>>
+  std::optional<std::pair<Distance, std::list<Node>>>
   findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore
                    = std::set<Node>(), std::set<std::pair<Node, Node>>
                    edgesToIgnore = std::set<std::pair<Node, Node>> ());
@@ -50,6 +51,9 @@ class Graph {
   bool isPath(Node from, std::optional<Node> to = std::optional<Node>());
   std::list<std::pair<std::string, std::string>> getDeadEnds();
   std::optional<std::list<std::string>> findEulerianPath();
+
+  std::vector<std::optional<std::list<std::string>>>
+  kTHShortestPath(Node from, Node to);
 };
 
 #endif  // INCLUDES_GRAPH_H_
