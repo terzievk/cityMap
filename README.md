@@ -116,6 +116,8 @@ a few tests compare the returned list with prechecked lists of results,
 which sort of relies on the deterministic properties of the unordered_map iterator,
 but maybe to others too
 
+### Dijkstra?
+- https://cp-algorithms.com/graph/dijkstra_sparse.html
 # the 7 requirements
 
 ### 1. is there a path between two nodes?

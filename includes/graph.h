@@ -26,6 +26,11 @@ class Graph {
   int getDistance(Node from, Node to);
   void addEdge(Node from, Node to, Distance);
 
+  std::optional<std::list<std::string>>
+  findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore
+                   = std::set<Node>(), std::set<std::pair<Node, Node>>
+                   edgesToIgnore = std::set<std::pair<Node, Node>> ());
+
   // Hierholzer's algorithm helpers
   void fillInOut(std::unordered_map<Node, std::pair<int, int>> *inOut);
   bool isEulerianPath(std::unordered_map<Node, std::pair<int, int>> *inOut);
@@ -45,10 +50,6 @@ class Graph {
   bool isPath(Node from, std::optional<Node> to = std::optional<Node>());
   std::list<std::pair<std::string, std::string>> getDeadEnds();
   std::optional<std::list<std::string>> findEulerianPath();
-  std::optional<std::list<std::string>>
-  findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore
-                   = std::set<Node>(), std::set<std::pair<Node, Node>>
-                   edgesToIgnore = std::set<std::pair<Node, Node>> ());
 };
 
 #endif  // INCLUDES_GRAPH_H_

@@ -272,7 +272,6 @@ void Graph::hierholzerDFSHelper(Node from, std::list<Node> *result,
 }
 
 std::optional<std::list<Graph::Node>> Graph::findEulerianPath() {
-
   // for each node count the in and out edges
   std::unordered_map<Node, std::pair<int, int>> inOut;
   fillInOut(&inOut);
@@ -305,44 +304,6 @@ std::optional<std::list<Graph::Node>> Graph::findEulerianPath() {
 
   return std::nullopt;
 }
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-/*
-  void dijkstra(int s, vector<int> & d, vector<int> & p) {
-
-  d[s] = 0;
-  using pii = pair<int, int>;
-  priority_queue<pii, vector<pii>, greater<pii>> q;
-  q.push({0, s});
-  while (!q.empty()) {
-  int v = q.top().second;
-  int d_v = q.top().first;
-  q.pop();
-  if (d_v != d[v])
-  continue;
-
-  for (auto edge : adj[v]) {
-  int to = edge.first;
-  int len = edge.second;
-
-  if (d[v] + len < d[to]) {
-  d[to] = d[v] + len;
-  p[to] = v;
-  q.push({d[to], to});
-  }
-  }
-  }
-  }
-*/
 
 std::optional<std::list<std::string>>
 Graph::findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore,
@@ -401,7 +362,7 @@ Graph::findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore,
 
   return result;
 }
-////////////////////////////////////////////////////////////////////////////////
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -536,6 +497,41 @@ class GraphPrivateMethodsTests {
       }
     }
   }
+
+  TEST_CASE_CLASS("g6: shortest path") {
+    Graph g{"./graphs/g6"};
+    std::optional<std::list<std::string>> result;
+
+    SUBCASE("path 1") {
+      result = g.findShortestPath("k", "a");
+      CHECK(result.has_value());
+
+      std::list<std::string> correctResult{"k", "c", "g", "i", "f", "a"};
+      CHECK_EQ(*result, correctResult);
+    }
+
+    SUBCASE("path 2") {
+      result = g.findShortestPath("b", "a");
+      CHECK(result.has_value());
+
+      std::list<std::string> correctResult{"b", "c", "g", "i", "f", "a"};
+      CHECK_EQ(*result, correctResult);
+    }
+
+
+    SUBCASE("no path 3") {
+      std::set<std::string> nodesToIgnore{"c"};
+      std::set<std::pair<std::string, std::string>> edgesToIgnore{{"f", "a"}};
+      result = g.findShortestPath("b", "a", nodesToIgnore, edgesToIgnore);
+      CHECK(!result.has_value());
+    }
+
+    SUBCASE("no path 2") {
+      result = g.findShortestPath("h", "a");
+      CHECK(!result.has_value());
+    }
+
+  }
 };
 
 TEST_CASE("g1") {
@@ -579,14 +575,7 @@ TEST_CASE("g1") {
 
   SUBCASE("Eulerian path") {
     std::optional<std::list<std::string>> result{g.findEulerianPath()};
-    if (result.has_value()) {
-      for (auto element : *result) {
-        std::cout << element << ' ';
-      }
-      std::cout << std::endl;
-    } else {
-      std::cout << "no eulerian path\n";
-    }
+    CHECK(!result.has_value());
   }
 }
 
@@ -597,7 +586,7 @@ TEST_CASE("g2: linked list") {
     std::optional<std::list<std::string>> result{g.findEulerianPath()};
     CHECK(result.has_value());
     std::list<std::string> correctResult{"a", "b", "c", "d", "e"};
-    CHECK_EQ(result, correctResult);
+    CHECK_EQ(*result, correctResult);
   }
 }
 
@@ -609,7 +598,7 @@ TEST_CASE("g3: eulerian path with a few loops") {
     CHECK(result.has_value());
     std::list<std::string> correctResult{"f", "g", "h", "i", "f", "d", "a",
       "b", "c", "d", "e"};
-    CHECK_EQ(result, correctResult);
+    CHECK_EQ(*result, correctResult);
   }
 }
 
@@ -630,37 +619,10 @@ TEST_CASE("g5: cycle with two loops") {
     CHECK(result.has_value());
     std::list<std::string> correctResult{"a", "e", "f", "g", "a", "b", "c",
       "d", "a"};
-    CHECK_EQ(result, correctResult);
+    CHECK_EQ(*result, correctResult);
   }
 }
 
-TEST_CASE("g6: g1 with extra nodes") {
-  Graph g{"./graphs/g6"};
 
-  g.print();
-
-  SUBCASE("shortest path") {
-    std::set<std::string> nodesToIgnore{"c"};
-    std::set<std::pair<std::string, std::string>> edgesToIgnore{{"f", "a"}};
-    std::optional<std::list<std::string>> result;
-    result = g.findShortestPath("b", "a", nodesToIgnore, edgesToIgnore);
-    if (result.has_value()) {
-      for (auto element : *result) {
-        std::cout << element << ' ';
-      }
-      std::cout << std::endl;
-    } else {
-      std::cout << "no path\n";
-    }
-  }
-}
-
-/*
-  h a              no
-  k a         k c g i f a
-  b a         b c g i f a
-
-
-*/
 
 TEST_SUITE_END();  // graph
