@@ -45,6 +45,7 @@ class Graph {
   bool isPath(Node from, std::optional<Node> to = std::optional<Node>());
   std::list<std::pair<std::string, std::string>> getDeadEnds();
   std::optional<std::list<std::string>> findEulerianPath();
+  std::optional<std::list<std::string>> findShortestPath(Node from, Node to);
 };
 
 #endif  // INCLUDES_GRAPH_H_

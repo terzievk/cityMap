@@ -5,11 +5,14 @@
 
 #include <list>
 #include <queue>
+#include <vector>
 #include <unordered_set>
 
 #include <utility>
 #include <optional>
+#include <functional>
 
+#include <climits>
 #include <cassert>  // "we've got exceptions at home, son"
 
 #include "../includes/graph.h"
@@ -181,17 +184,6 @@ std::list<std::pair<std::string, std::string>> Graph::getDeadEnds() {
   return result;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-
 
 void Graph::fillInOut(std::unordered_map<Node, std::pair<int, int>> *inOut) {
   // add each node to inOut and count the out nodes;
@@ -314,6 +306,96 @@ std::optional<std::list<Graph::Node>> Graph::findEulerianPath() {
   return std::nullopt;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+/*
+  void dijkstra(int s, vector<int> & d, vector<int> & p) {
+
+  d[s] = 0;
+  using pii = pair<int, int>;
+  priority_queue<pii, vector<pii>, greater<pii>> q;
+  q.push({0, s});
+  while (!q.empty()) {
+  int v = q.top().second;
+  int d_v = q.top().first;
+  q.pop();
+  if (d_v != d[v])
+  continue;
+
+  for (auto edge : adj[v]) {
+  int to = edge.first;
+  int len = edge.second;
+
+  if (d[v] + len < d[to]) {
+  d[to] = d[v] + len;
+  p[to] = v;
+  q.push({d[to], to});
+  }
+  }
+  }
+  }
+*/
+
+std::optional<std::list<std::string>> Graph::findShortestPath(Node from,
+                                                              Node to) {
+  std::unordered_map<Node, Distance> d;
+  for (auto NodePair : nodes) {
+    d.insert({NodePair.first, INT_MAX});
+  }
+  std::unordered_map<Node, Node> p;
+  d[from] = 0;
+
+  using pdn = std::pair<Distance, Node>;
+  std::priority_queue<pdn, std::vector<pdn>, std::greater<pdn>> q;
+
+  q.push({0, from});
+  while (!q.empty()) {
+    Node v {q.top().second};
+    if (v == to) {
+      break;
+    }
+    Distance dv {q.top().first};
+    q.pop();
+
+    if (dv != d[v]) {
+      continue;
+    }
+
+    for (auto adjPair : *getAdjacentToPointer(v)) {
+      Node to {adjPair.first};
+      Distance len = {adjPair.second};
+
+      if (d[v] + len < d[to]) {
+        d[to] = d[v] + len;
+        p[to] = v;
+        q.push({d[to], to});
+      }
+    }
+  }
+
+  if (d[to] == INT_MAX) {
+    return std::nullopt;
+  }
+
+  Node current{to};
+  std::list<Node> result;
+
+  while (current != from) {
+    result.push_front(current);
+    current = p[current];
+  }
+  result.push_front(from);
+
+  return result;
+}
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -547,6 +629,30 @@ TEST_CASE("g5: cycle with two loops") {
   }
 }
 
+TEST_CASE("g6: g1 with extra nodes") {
+  Graph g{"./graphs/g6"};
 
+  g.print();
+
+  SUBCASE("shortest path") {
+    std::optional<std::list<std::string>> result{g.findShortestPath("b", "a")};
+    if (result.has_value()) {
+      for (auto element : *result) {
+        std::cout << element << ' ';
+      }
+      std::cout << std::endl;
+    } else {
+      std::cout << "no path\n";
+    }
+  }
+}
+
+/*
+  h a              no
+  k a         k c g i f a
+  b a         b c g i f a
+
+
+*/
 
 TEST_SUITE_END();  // graph
