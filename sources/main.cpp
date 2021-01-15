@@ -10,30 +10,30 @@
 
 void printPath(std::optional<std::pair<int, std::list<std::string>>> path);
 
-// void helper() {
-//   Graph g{"./graphs/g6"};
-//   using Path = std::optional<std::pair<int, std::list<std::string>>>;
-//   std::vector<Path> result;
-
-//   while (std::cin) {
-//     std::string from;
-//     std::string to;
-//     int number;
-
-//     std::cin >> from >> to >> number;
-//     try {
-//       result = g.kTHShortestPath(from, to, number);
-//       for (auto path : result) {
-//         printPath(path);
-//       }
-//     } catch (const std::exception &exception) {
-//       std::cerr << "Standard exception: " << exception.what() << '\n';
-//     }
-
-//   }
-// }
-
 void helper() {
+  Graph g{"./graphs/g6"};
+  using Path = std::optional<std::pair<int, std::list<std::string>>>;
+  std::vector<Path> result;
+
+  while (std::cin) {
+    std::string from;
+    std::string to;
+    int number;
+
+    std::cin >> from >> to >> number;
+    try {
+      result = g.kTHShortestPath(from, to, number);
+      for (auto path : result) {
+        printPath(path);
+      }
+    } catch (const std::exception &exception) {
+      std::cerr << "Standard exception: " << exception.what() << '\n';
+    }
+
+  }
+}
+
+void helper2() {
   Graph g{"./graphs/g6"};
   using Path = std::optional<std::pair<int, std::list<std::string>>>;
   Path result;
@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
   }
   //////////////////////////////////////////////////////////////////////////////
   std::cout << "Hello, World!\n";
-  //  helper();
+  helper();
 
 
   //////////////////////////////////////////////////////////////////////////////

@@ -311,7 +311,30 @@ std::optional<std::list<Graph::Node>> Graph::findEulerianPath() {
 Graph::Path
 Graph::findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore,
                         std::set<std::pair<Node, Node>> edgesToIgnore) {
+  std::cout << "searching from: " << from << " to: " << to << std::endl;
+  std::cout << "nodes to ignore: ";
+  for (auto elem : nodesToIgnore) {
+    std::cout << elem << ' ';
+  }
+
+  std::cout << "\nedges to ignore: ";
+  for (auto elem : edgesToIgnore) {
+    std::cout << elem.first << ' ' << elem.second << std::endl;
+  }
+  std::cout << "\n-------------------------------\n";
+
+
+  std::cout << std::endl;
+  if (!isNode(from) || !isNode(to)) {
+    return std::nullopt;
+  }
+
+  if (nodesToIgnore.contains(from) || nodesToIgnore.contains(to)) {
+    return std::nullopt;
+  }
+
   std::unordered_map<Node, Distance> d;
+
   for (auto NodePair : nodes) {
     d.insert({NodePair.first, INT_MAX});
   }
@@ -333,6 +356,7 @@ Graph::findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore,
       break;
     }
 
+    assert(d.contains(v) && "d contains v");
     if (dv != d[v]) {
       continue;
     }
@@ -340,6 +364,7 @@ Graph::findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore,
     for (const auto &adjPair : *getAdjacentToPointer(v)) {
       Node to {adjPair.first};
       Distance len = {adjPair.second};
+      std::cout << "from: " << v <<" to: " << to << std::endl;
       if (nodesToIgnore.contains(to) ||
           edgesToIgnore.contains({v, to})) {
         continue;
@@ -353,9 +378,11 @@ Graph::findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore,
     }
   }
 
-  if (d[to] == INT_MAX) {
+  std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n";
+  if (d.contains(to) && d[to] == INT_MAX) {
     return std::nullopt;
   }
+  std::cout << "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\n";
 
   Node current{to};
   std::list<Node> result;
@@ -449,6 +476,7 @@ Graph::kTHShortestPath(Node from, Node to, int K) {
   std::set<Path> B;
 
   for (int k{1}; k < K; ++k) {
+    std::cout << "kkkkkkkkkkkkkkkkkkkkkk: " << k << std::endl;
     int size {static_cast<int>(A[k-1]->second.size())};
 
     for (int i{}; i < size - 1; ++i) {
@@ -469,8 +497,14 @@ Graph::kTHShortestPath(Node from, Node to, int K) {
       }
 
       Path spurPath;
-      spurPath = findShortestPath(spurNode, to,
-                                  nodesToIgnore, edgesToIgnore);
+
+      try {
+        spurPath = findShortestPath(spurNode, to,
+                                    nodesToIgnore, edgesToIgnore);
+      } catch (const std::exception &exception)
+      {
+        std::cerr << "nooooooooooooo goood" << exception.what() << '\n';
+      }
 
       if (spurPath.has_value()) {
         // totalPath = rootPath + spurPath
@@ -483,6 +517,8 @@ Graph::kTHShortestPath(Node from, Node to, int K) {
 
         B.insert(totalPath);
       }
+
+      std::cout << "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\n";
     }
 
     if (B.empty()) {
@@ -498,15 +534,15 @@ Graph::kTHShortestPath(Node from, Node to, int K) {
   return A;
 }
 
-// TEST_CASE("g6: k-th shortest") {
-//   Graph g{"./graphs/g6"};
-//   std::vector<Path> result;
-//   result = g.kTHShortestPath("a", "f", 4);
+TEST_CASE("g6: nasty test") {
+  Graph g{"./graphs/g6"};
+  std::vector<Graph::Path> result;
+  result = g.kTHShortestPath("a", "f", 4);
 
-//   for (auto path : result) {
-//     printPath(path);
-//   }
-// }
+  for (auto path : result) {
+    printPath(path);
+  }
+}
 
 
 
