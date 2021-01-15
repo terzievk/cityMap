@@ -479,7 +479,7 @@ Graph::kTHShortestPath(Node from, Node to, int K) {
     std::cout << "kkkkkkkkkkkkkkkkkkkkkk: " << k << std::endl;
     int size {static_cast<int>(A[k-1]->second.size())};
 
-    for (int i{}; i < size - 1; ++i) {
+    for (int i{}; i < size - 2; ++i) {
       Node spurNode {getIthNode(A[k-1], i)};
       Path rootPath {getIthNodes(A[k-1], i)};
 

@@ -119,6 +119,24 @@ but maybe to others too
 ### Dijkstra?
 - https://cp-algorithms.com/graph/dijkstra_sparse.html
 
+### best bug yet
+Spent a few hours searching for a std::bad_alloc error because I misinterpreted
+a pseudocode for loop, adding an extra iteration in some cases...
+I had written this:
+
+```
+  for i from 0 to size(A[k − 1]) − 2:
+```
+like this:
+```
+    for (int i{}; i < size - 1; ++i) {
+```
+instead of this:
+```
+    for (int i{}; i < size - 2; ++i) {
+```
+
+
 # the 7 requirements
 
 ### 1. is there a path between two nodes?
