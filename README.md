@@ -146,6 +146,11 @@ but maybe to others too
 ### Dijkstra?
 - https://cp-algorithms.com/graph/dijkstra_sparse.html
 
+### Yen
+- https://www.wikiwand.com/en/Yen%27s_algorithm
+
+### Hierholzer
+- https://www.youtube.com/watch?v=8MpoO2zA2l4&ab_channel=WilliamFiset
 ### best bug yet
 Spent a few hours searching for a std::bad_alloc error because I misinterpreted
 a pseudocode for loop, adding an extra iteration in some cases...
