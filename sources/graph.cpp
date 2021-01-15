@@ -9,7 +9,9 @@
 #include <unordered_set>
 
 #include <utility>
+#include <iterator>
 #include <optional>
+#include <exception>
 #include <functional>
 
 #include <climits>
@@ -312,6 +314,7 @@ Graph::findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore,
   for (auto NodePair : nodes) {
     d.insert({NodePair.first, INT_MAX});
   }
+
   std::unordered_map<Node, Node> p;
   d[from] = 0;
 
@@ -319,19 +322,21 @@ Graph::findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore,
   std::priority_queue<pdn, std::vector<pdn>, std::greater<pdn>> q;
 
   q.push({0, from});
+
   while (!q.empty()) {
     Node v {q.top().second};
+    Distance dv {q.top().first};
+    q.pop();
+
     if (v == to) {
       break;
     }
-    Distance dv {q.top().first};
-    q.pop();
 
     if (dv != d[v]) {
       continue;
     }
 
-    for (auto adjPair : *getAdjacentToPointer(v)) {
+    for (const auto &adjPair : *getAdjacentToPointer(v)) {
       Node to {adjPair.first};
       Distance len = {adjPair.second};
       if (nodesToIgnore.contains(to) ||
@@ -364,10 +369,153 @@ Graph::findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore,
   return std::make_pair(d[to], result);
 }
 
-// std::vector<std::optional<std::list<std::string>>>
-// Graph::kTHShortestPath(Node from, Node to) {
+void printPath(std::optional<std::pair<int, std::list<std::string>>> path) {
+  std::cout << "\n\n";
+  if (path.has_value()) {
+    std::cout << "distance: " << path->first;
+    std::cout << "\npath: ";
+    for (auto node : path->second) {
+      std::cout << node << ' ';
+    }
+    std::cout << std::endl;
+    return;
+  }
 
+  std::cout << "no path\n";
+}
+
+// returns the i-th node
+std::string
+getIthNode(std::optional<std::pair<int, std::list<std::string>>> path, int i) {
+  // maybe too slow?
+  auto it {path->second.begin()};
+  std::advance(it, i);
+  return *it;
+}
+
+TEST_CASE("get i-th node") {
+  using Path = std::optional<std::pair<int, std::list<std::string>>>;
+  Path p{{0, {"a", "b", "c", "d"}}};
+
+  CHECK_EQ(getIthNode(p, 3), "d");
+}
+
+// returns the first i nodes
+std::optional<std::pair<int, std::list<std::string>>>
+Graph::getIthNodes(std::optional<std::pair<int, std::list<std::string>>> path,
+                   int i) {
+  std::list<std::string> result;
+  auto it {path->second.begin()};
+  for (int j{}; j < i; ++j) {
+    // postfix ++ has higher precedence than *,but anyway
+    result.push_back(*(it++));
+  }
+  // root path here is garbage
+  Distance d{};
+
+  for (auto it {result.begin()}; it != result.end(); ++it) {
+    // for each but the last
+    auto nextIt {it};
+    ++nextIt;
+
+    if (nextIt == result.end()) {
+      break;
+    }
+    // add the distance between the two nodes
+    d += getDistance(*it, *nextIt);
+  }
+  return std::make_pair(d, result);
+}
+
+
+
+/*
+  Graph::findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore,
+  std::set<std::pair<Node, Node>> edgesToIgnore) {
+*/
+
+////////////////////////////////////////////////////////////////////////////////
+std::vector<std::optional<std::pair<int, std::list<std::string>>>>
+Graph::kTHShortestPath(Node from, Node to, int K) {
+  using Path = std::optional<std::pair<int, std::list<std::string>>>;
+
+
+  std::vector<Path> A(K);
+
+  std::cout <<  "hiiiiiiiiiiiii\n";
+
+  Path result {findShortestPath(from, to)};
+  A[0] = result;
+
+  // if not even one shortest path
+  if (!result.has_value()) {
+    return A;
+  }
+
+  std::set<Path> B;
+
+  for (int k{1}; k < K; ++k) {
+    int size {static_cast<int>(A[k-1]->second.size())};
+
+    for (int i{}; i < size - 1; ++i) {
+      Node spurNode {getIthNode(A[k-1], i)};
+      Path rootPath {getIthNodes(A[k-1], i)};
+
+      std::set<std::pair<Node, Node>> edgesToIgnore;
+      for (int j{}; j < k; ++j) {
+        Path p{A[j]};
+        if (rootPath == getIthNodes(p, i)) {
+          edgesToIgnore.insert({getIthNode(p, i), getIthNode(p, i+1)});
+        }
+      }
+
+      std::set<Node> nodesToIgnore;
+      for (Node node : rootPath->second) {  // spur node is not in the rootPath
+        nodesToIgnore.insert(node);
+      }
+
+      Path spurPath;
+      spurPath = findShortestPath(spurNode, to,
+                                  nodesToIgnore, edgesToIgnore);
+
+      if (spurPath.has_value()) {
+        // totalPath = rootPath + spurPath
+
+        Path totalPath {rootPath};
+        totalPath->first += spurPath->first;
+        for (Node node : spurPath->second) {
+          totalPath->second.push_back(node);
+        }
+
+        B.insert(totalPath);
+      }
+    }
+
+    if (B.empty()) {
+      // no need to continue
+      return A;
+    }
+
+    // will this give the first element
+    A[k] = *B.begin();
+    B.erase(B.begin());
+  }
+
+  return A;
+}
+
+// TEST_CASE("g6: k-th shortest") {
+//   Graph g{"./graphs/g6"};
+//   using Path = std::optional<std::pair<int, std::list<std::string>>>;
+//   std::vector<Path> result;
+//   result = g.kTHShortestPath("a", "f", 4);
+
+//   for (auto path : result) {
+//     printPath(path);
+//   }
 // }
+
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -389,6 +537,23 @@ class GraphPrivateMethodsTests {
   GraphPrivateMethodsTests() = delete;
 
  private:
+  TEST_CASE_CLASS("get i-th nodes") {
+    Graph g{"./graphs/g6"};
+    using Path = std::optional<std::pair<int, std::list<std::string>>>;
+    Path result;
+
+    result = g.findShortestPath("k", "a");
+    CHECK(result.has_value());
+
+    int correctResultDistance {20};
+    std::list<std::string> correctResultPath{"k", "c", "g", "i", "f", "a"};
+
+    CHECK_EQ(result->first, correctResultDistance);
+    CHECK_EQ(result->second, correctResultPath);
+
+    CHECK_EQ(g.getIthNodes(result, 2), Path{{6, {"k", "c"}}});
+  }
+
   TEST_CASE_CLASS("") {
     Graph g;
   }
