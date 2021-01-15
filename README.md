@@ -142,28 +142,49 @@ instead of this:
 
 ### 1. is there a path between two nodes?
 - BFS:
-`bool isPath(Node from, std::optional<Node> to = std::optional<Node>())`
+```
+bool isPath(Node from, std::optional<Node> to = std::optional<Node>())
 
+```
 ### 2. k-th shortest paths
-- Yen's algorihtm with Dijkstra: to do
+- Yen's algorihtm with Dijkstra:
+  - note: Yen's algorithm doesn't count loops
+```
+std::vector<Path> kTHShortestPath(Node from, Node to, int K, std::set<Node>
+                                    nodesToIgnore = std::set<Node>());
+```
+
 
 ### 3. k-th shortest paths with list of closed
-- same as 2: Yen's: to do
+- same as 2: Yen's:
+  - note: Yen's algorithm doesn't count loops
+```
+std::vector<Path> kTHShortestPath(Node from, Node to, int K, std::set<Node>
+                                    nodesToIgnore = std::set<Node>());
+```
 
 ### 4. is there a loop starting given node?
 - BFS from 1. :
-`bool isPath(Node from, std::optional<Node> to = std::optional<Node>())`
+```
+bool isPath(Node from, std::optional<Node> to = std::optional<Node>())
 
+```
 ### 5. find Euler's cycle
 - Hierholzer's algorithm: 
-`std::optional<std::list<std::string>> findEulerianPath();`
+```
+std::optional<std::list<std::string>> findEulerianPath();
+```
     - if we need a cycle, the first and last elements of the list, should be the same
 
 ### 6. is Mother? (there is a path from it to all the rest)
 - same as 1. and 4. BFS:
-`bool isPath(Node from, std::optional<Node> to = std::optional<Node>())`
+```
+bool isPath(Node from, std::optional<Node> to = std::optional<Node>())
+```
 
 ### 7. find all dead ends
 - get all the nodes with no adjacent to nodes. check if any node 
 is adjacent to one of those:
-`std::list<std::pair<std::string, std::string>> getDeadEnds()`
+```
+std::list<std::pair<std::string, std::string>> getDeadEnds()
+```

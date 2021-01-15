@@ -15,21 +15,13 @@ void helper() {
   using Path = std::optional<std::pair<int, std::list<std::string>>>;
   std::vector<Path> result;
 
-  while (std::cin) {
-    std::string from;
-    std::string to;
-    int number;
-
-    std::cin >> from >> to >> number;
-    try {
-      result = g.kTHShortestPath(from, to, number);
-      for (auto path : result) {
-        printPath(path);
-      }
-    } catch (const std::exception &exception) {
-      std::cerr << "Standard exception: " << exception.what() << '\n';
+  try {
+    result = g.kTHShortestPath("a", "f", 10, std::set<Graph::Node>{"g"});
+    for (auto path : result) {
+      printPath(path);
     }
-
+  } catch (const std::exception &exception) {
+    std::cerr << "Standard exception: " << exception.what() << '\n';
   }
 }
 
@@ -65,7 +57,7 @@ int main(int argc, char *argv[]) {
   }
   //////////////////////////////////////////////////////////////////////////////
   std::cout << "Hello, World!\n";
-  //  helper();
+  helper();
 
 
   //////////////////////////////////////////////////////////////////////////////

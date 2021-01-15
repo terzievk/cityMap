@@ -57,7 +57,8 @@ class Graph {
                         edgesToIgnore = std::set<std::pair<Node, Node>> ());
 
 
-  std::vector<Path> kTHShortestPath(Node from, Node to, int k);
+  std::vector<Path> kTHShortestPath(Node from, Node to, int K, std::set<Node>
+                                    nodesToIgnore = std::set<Node>());
 };
 
 #endif  // INCLUDES_GRAPH_H_

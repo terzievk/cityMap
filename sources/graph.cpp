@@ -547,7 +547,8 @@ Graph::Path Graph::getIthNodes(Path path, int i) {
 
 ////////////////////////////////////////////////////////////////////////////////
 std::vector<Graph::Path>
-Graph::kTHShortestPath(Node from, Node to, int K) {
+Graph::kTHShortestPath(Node from, Node to, int K,
+                       std::set<Node> nodesToIgnore) {
   std::vector<Path> A(K);
 
   Path result {findShortestPath(from, to)};
@@ -575,20 +576,13 @@ Graph::kTHShortestPath(Node from, Node to, int K) {
         }
       }
 
-      std::set<Node> nodesToIgnore;
+      std::set<Node> allNodesToIgnore{nodesToIgnore};
       for (Node node : rootPath->second) {  // spur node is not in the rootPath
-        nodesToIgnore.insert(node);
+        allNodesToIgnore.insert(node);
       }
 
-      Path spurPath;
-
-      try {
-        spurPath = findShortestPath(spurNode, to,
-                                    nodesToIgnore, edgesToIgnore);
-      } catch (const std::exception &exception)
-      {
-        std::cerr << "nooooooooooooo goood" << exception.what() << '\n';
-      }
+      Path spurPath {findShortestPath(spurNode, to,
+                                      allNodesToIgnore, edgesToIgnore)};
 
       if (spurPath.has_value()) {
         // totalPath = rootPath + spurPath
