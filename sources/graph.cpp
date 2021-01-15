@@ -83,17 +83,16 @@ void Graph::addNode(Node n) {
   nodes.insert({n, new AdjacentTo});
 }
 
-Graph::AdjacentTo* Graph::getAdjacentToPointer(Node n) {
-  assert(isNode(n) && "should be a node");
-
-  return nodes.find(n)->second;
-}
-
 bool Graph::hasAdjacentTo(Node n) {
   assert(isNode(n) && "should be a node");
   return !getAdjacentToPointer(n)->empty();
 }
 
+Graph::AdjacentTo* Graph::getAdjacentToPointer(Node n) {
+  assert(isNode(n) && "should be a node");
+
+  return nodes.find(n)->second;
+}
 
 bool Graph::isEdge(Node from, Node to) {
   return isNode(from) && isNode(to) && getAdjacentToPointer(from)->contains(to);
@@ -115,7 +114,6 @@ void Graph::addEdge(Node from, Node to, Distance distance) {
   // will do nothing if such adjacent node exists
   getAdjacentToPointer(from)->insert({to, distance});
 }
-
 
 bool Graph::isPath(Node from, std::optional<Node> to) {
   // BFS
@@ -188,7 +186,6 @@ TEST_CASE("g1") {
     CHECK(!g.isPath("g"));
   }
 }
-
 
 std::list<std::pair<Graph::Node, Graph::Node>> Graph::getDeadEnds() {
   std::unordered_set<Node> leafs;
@@ -538,14 +535,6 @@ Graph::Path Graph::getIthNodes(Path path, int i) {
   return std::make_pair(d, result);
 }
 
-
-
-/*
-  Graph::findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore,
-  std::set<std::pair<Node, Node>> edgesToIgnore) {
-*/
-
-////////////////////////////////////////////////////////////////////////////////
 std::vector<Graph::Path>
 Graph::kTHShortestPath(Node from, Node to, int K,
                        std::set<Node> nodesToIgnore) {
@@ -625,9 +614,6 @@ TEST_CASE("g6: nasty test") {
   CHECK_EQ(result[1], Graph::Path{{22, {"a", "d", "i", "f"}}});
   CHECK_EQ(result[2], Graph::Path{{31, {"a", "b", "c", "g", "i", "f"}}});
 }
-
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////

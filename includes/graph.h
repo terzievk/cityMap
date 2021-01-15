@@ -30,14 +30,19 @@ class Graph {
   int getDistance(Node from, Node to);
   void addEdge(Node from, Node to, Distance);
 
-  // Hierholzer's algorithm helpers
+  // Dijkstra
+  Path findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore
+                        = std::set<Node>(), std::set<std::pair<Node, Node>>
+                        edgesToIgnore = std::set<std::pair<Node, Node>> ());
+
+  Path getIthNodes(Path path, int i);
+
+  // Hierholzer
   void fillInOut(std::unordered_map<Node, std::pair<int, int>> *inOut);
   bool isEulerianPath(std::unordered_map<Node, std::pair<int, int>> *inOut);
   Node findStartingNode(std::unordered_map<Node, std::pair<int, int>> *inOut);
   void hierholzerDFSHelper(Node from, std::list<Node> *result,
                            std::set<std::pair<Node, Node>> *visited);
-
-  Path getIthNodes(Path path, int i);
 
   Graph() {}  // used only in tests
   friend class GraphPrivateMethodsTests;
@@ -48,15 +53,11 @@ class Graph {
 
   void print();
 
+  std::list<std::pair<Node, Node>> getDeadEnds();
+  std::optional<std::list<Node>> findEulerianPath();
   bool isPath(Node from, std::optional<Node> to = std::optional<Node>());
-  std::list<std::pair<std::string, std::string>> getDeadEnds();
-  std::optional<std::list<std::string>> findEulerianPath();
 
-  Path findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore
-                        = std::set<Node>(), std::set<std::pair<Node, Node>>
-                        edgesToIgnore = std::set<std::pair<Node, Node>> ());
-
-
+  // Yen
   std::vector<Path> kTHShortestPath(Node from, Node to, int K, std::set<Node>
                                     nodesToIgnore = std::set<Node>());
 };

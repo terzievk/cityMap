@@ -25,27 +25,6 @@ void helper() {
   }
 }
 
-void helper2() {
-  Graph g{"./graphs/g6"};
-  using Path = std::optional<std::pair<int, std::list<std::string>>>;
-  Path result;
-
-  while (std::cin) {
-    std::string from;
-    std::string to;
-
-    std::cin >> from >> to;
-    try {
-      result = g.findShortestPath(from, to);
-      printPath(result);
-    } catch (const std::exception &exception) {
-      std::cerr << "Standard exception: " << exception.what() << '\n';
-    }
-
-  }
-
-}
-
 
 int main(int argc, char *argv[]) {
   doctest::Context context;
@@ -57,7 +36,7 @@ int main(int argc, char *argv[]) {
   }
   //////////////////////////////////////////////////////////////////////////////
   std::cout << "Hello, World!\n";
-  helper();
+  //  helper();
 
 
   //////////////////////////////////////////////////////////////////////////////
