@@ -15,7 +15,7 @@
 #include <functional>
 
 #include <climits>
-#include <cassert>  // "we've got exceptions at home, son"
+#include <cassert>
 
 #include "../includes/graph.h"
 #include "../doctest/doctest.h"
@@ -81,6 +81,7 @@ bool Graph::isNode(Node n) {
 void Graph::addNode(Node n) {
   // insert inserts if there is no such element
   nodes.insert({n, new AdjacentTo});
+  assert(nodes[n] && "new should \"always\" work");
 }
 
 bool Graph::hasAdjacentTo(Node n) {
@@ -778,7 +779,6 @@ class GraphPrivateMethodsTests {
 
       CHECK_EQ(result, Graph::Path{{19, {"b", "c", "g", "i", "f", "a"}}});
     }
-
 
     SUBCASE("no path 3") {
       std::set<std::string> nodesToIgnore{"c"};

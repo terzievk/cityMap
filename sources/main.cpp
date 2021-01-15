@@ -11,18 +11,8 @@
 void printPath(std::optional<std::pair<int, std::list<std::string>>> path);
 
 void helper() {
-  Graph g{"./graphs/g6"};
-  using Path = std::optional<std::pair<int, std::list<std::string>>>;
-  std::vector<Path> result;
-
-  try {
-    result = g.kTHShortestPath("a", "f", 10, std::set<Graph::Node>{"g"});
-    for (auto path : result) {
-      printPath(path);
-    }
-  } catch (const std::exception &exception) {
-    std::cerr << "Standard exception: " << exception.what() << '\n';
-  }
+  Graph g{"./graphs/g7"};
+  g.print();
 }
 
 
@@ -36,7 +26,7 @@ int main(int argc, char *argv[]) {
   }
   //////////////////////////////////////////////////////////////////////////////
   std::cout << "Hello, World!\n";
-  //  helper();
+  // helper();
 
 
   //////////////////////////////////////////////////////////////////////////////

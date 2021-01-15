@@ -29,7 +29,22 @@ Here is a good one: https://ibl.bas.bg/rbe/
 binary search and/or hash tables.
 
 ### whats my data structure
-#explain why I picked my adjacency list to be of type
+Since there are no specific time/memory constraints on the project and considering
+that there isn't an uniform solution to various data structure problems I have picked
+unordered_map. I though it would have been intresting to use unordered_map instead of
+maybe more classical vector of vector for the adjacency table. Plus we already used map
+on seminars.
+- https://www.bigocheatsheet.com/
+
+Pros:
+- average constant search, insertion, delete
+- reference/pointer invalidation only on deletion
+Cons:
+- based on the hashing algorithm used for implementation  search, insertion and deletion
+are to O(n)
+- complex data structure - memory overhead
+- bad locality of reference
+
 ```
   using Node = std::string;
   using Distance = int;
@@ -40,15 +55,25 @@ binary search and/or hash tables.
 ```
 ### Why unordered_map(hash table)? Why not map(red-black tree) or vector(dynamic array)?
 # don't forget to write this
-- https://www.bigocheatsheet.com/
+In different scenarion, different data structures might yield optimal results.
+- maps have better worst case insertion/deletion - O(log n)
+  - better for reading the adjacency list and checking if an element is already one,
+  when adding elements
+- vectors have O(1) access
+  - better for implementing the algorithms on the graph
+  
+An optimal solution might consist even of a combination of those. Maybe read the graph
+using a map to guarantee insertion/deletion O(log n) and then copy into a vector of 
+vectors to guarantee O(1) look up.
+
+For this specific problem, speed isn't crutial so the differences between the suggested
+implementation can be considered negligible.
+
+When performance is critical, use of profiling tools is highly recommended.
 
 ### Why not use an adjacency matrix?
 Because in a city, most of the crossroads aren't adjacent, and the graph would be
 too sparse to justify the used memory.
-
-### Is moving the adjacency list from unordered map to vector justified?
-Hash tables have better average search/insertion/deletion than dynamic arrays,
-and they are better for reading the graph. 
 
 ### why are the nodes in AdjacentTo not references/pointers?
 std::unordered_map guarantees  ` References and pointers to either key or data
@@ -56,8 +81,10 @@ stored in the container are only invalidated by erasing that element, even when
 the corresponding iterator is invalidated. ` So the adjacentTo nodes could be
 references to the nodes in the nodes map, but too much early optimization
 is not cool.
-Plus I don't know how exactly std::string works.
-I guess the compiler does a pretty good job at optimising the memory anyway...
+std::string_view can be used to optimize the nodes memory.
+
+~~Plus I don't know how exactly std::string works.
+I guess the compiler does a pretty good job at optimising the memory anyway...~~
 
 ![xkcd](https://imgs.xkcd.com/comics/optimization.png)
 
