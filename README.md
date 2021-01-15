@@ -1,6 +1,6 @@
 # cityMap
 SDP project, FMI
-### what's my data structure?
+### intro tl;dr: skip the intro
 As Benjamin Franklin famously wrote in 1789, in a letter to Jean-Baptiste Le Roy, 
 who, among other things, was one of the contributors, known as Encyclopédistes,
 with 108 articles to  the Encyclopédie, which was co-edited by the famous and
@@ -28,7 +28,8 @@ Here is a good one: https://ibl.bas.bg/rbe/
 - If you have a data structures and algorithms problem,
 binary search and/or hash tables.
 
-Based on the last close to universal certainty, I picked my adjacency list to be of type
+### whats my data structure
+#explain why I picked my adjacency list to be of type
 ```
   using Node = std::string;
   using Distance = int;

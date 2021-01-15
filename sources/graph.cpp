@@ -20,6 +20,8 @@
 #include "../includes/graph.h"
 #include "../doctest/doctest.h"
 
+TEST_SUITE_BEGIN("graph");
+
 Graph::Graph(std::string filename) {
   // assume correctly formatted input
   std::ifstream input(filename);
@@ -162,6 +164,32 @@ bool Graph::isPath(Node from, std::optional<Node> to) {
   return true;
 }
 
+TEST_CASE("g1") {
+  Graph g{"./graphs/g1"};
+  //  std::cout << "here\n";
+  // g.print();
+
+  SUBCASE("isPath: path") {
+    CHECK(g.isPath("a", "b"));
+    CHECK(g.isPath("a", "i"));
+    CHECK(!g.isPath("d", "b"));
+    CHECK(!g.isPath("i", "a"));
+  }
+
+  SUBCASE("isPath: loop") {
+    CHECK(g.isPath("a", "a"));
+    CHECK(g.isPath("b", "b"));
+    CHECK(!g.isPath("g", "g"));
+  }
+
+  SUBCASE("isPath: mother") {
+    CHECK(g.isPath("a"));
+    CHECK(g.isPath("b"));
+    CHECK(!g.isPath("g"));
+  }
+}
+
+
 std::list<std::pair<Graph::Node, Graph::Node>> Graph::getDeadEnds() {
   std::unordered_set<Node> leafs;
   for (auto nodePair : nodes) {
@@ -185,6 +213,26 @@ std::list<std::pair<Graph::Node, Graph::Node>> Graph::getDeadEnds() {
 
   return result;
 }
+
+TEST_CASE("g1") {
+  Graph g{"./graphs/g1"};
+  //  std::cout << "here\n";
+  // g.print();
+
+  SUBCASE("dead ends") {
+    using List = std::list<std::pair<Graph::Node, Graph::Node>>;
+
+    List deadEnds{g.getDeadEnds()};
+    REQUIRE(!deadEnds.empty());
+
+    CHECK_EQ(deadEnds.size(), 3);
+
+    deadEnds.sort();
+    // sorted this manually
+    CHECK_EQ(deadEnds, List {{"a", "d"}, {"g", "h"}, {"g", "i"}});
+  }
+}
+
 
 
 void Graph::fillInOut(std::unordered_map<Node, std::pair<int, int>> *inOut) {
@@ -307,24 +355,66 @@ std::optional<std::list<Graph::Node>> Graph::findEulerianPath() {
   return std::nullopt;
 }
 
+TEST_CASE("g1") {
+  Graph g{"./graphs/g1"};
+  //  std::cout << "here\n";
+  // g.print();
+
+  SUBCASE("Eulerian path") {
+    std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
+    CHECK(!result.has_value());
+  }
+}
+
+TEST_CASE("g2: linked list") {
+  Graph g{"./graphs/g2"};
+
+  SUBCASE("Eulerian path") {
+    std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
+    CHECK(result.has_value());
+
+    CHECK_EQ(*result, std::list<Graph::Node> {"a", "b", "c", "d", "e"});
+  }
+}
+
+TEST_CASE("g3: eulerian path with a few loops") {
+  Graph g{"./graphs/g3"};
+
+  SUBCASE("Eulerian path") {
+    std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
+    CHECK(result.has_value());
+
+    CHECK_EQ(*result, std::list<Graph::Node> {"f", "g", "h", "i", "f", "d",
+        "a", "b", "c", "d", "e"});
+  }
+}
+
+TEST_CASE("g4: no edges") {
+  Graph g{"./graphs/g4"};
+
+  SUBCASE("Eulerian path") {
+    std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
+    CHECK(!result.has_value());
+  }
+}
+
+TEST_CASE("g5: cycle with two loops") {
+  Graph g{"./graphs/g5"};
+
+  SUBCASE("Eulerian path") {
+    std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
+    CHECK(result.has_value());
+
+    CHECK_EQ(*result, std::list<Graph::Node> {"a", "e", "f", "g", "a", "b", "c",
+        "d", "a"});
+  }
+}
+
+
 
 Graph::Path
 Graph::findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore,
                         std::set<std::pair<Node, Node>> edgesToIgnore) {
-  std::cout << "searching from: " << from << " to: " << to << std::endl;
-  std::cout << "nodes to ignore: ";
-  for (auto elem : nodesToIgnore) {
-    std::cout << elem << ' ';
-  }
-
-  std::cout << "\nedges to ignore: ";
-  for (auto elem : edgesToIgnore) {
-    std::cout << elem.first << ' ' << elem.second << std::endl;
-  }
-  std::cout << "\n-------------------------------\n";
-
-
-  std::cout << std::endl;
   if (!isNode(from) || !isNode(to)) {
     return std::nullopt;
   }
@@ -364,7 +454,6 @@ Graph::findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore,
     for (const auto &adjPair : *getAdjacentToPointer(v)) {
       Node to {adjPair.first};
       Distance len = {adjPair.second};
-      std::cout << "from: " << v <<" to: " << to << std::endl;
       if (nodesToIgnore.contains(to) ||
           edgesToIgnore.contains({v, to})) {
         continue;
@@ -378,11 +467,9 @@ Graph::findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore,
     }
   }
 
-  std::cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n";
   if (d.contains(to) && d[to] == INT_MAX) {
     return std::nullopt;
   }
-  std::cout << "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\n";
 
   Node current{to};
   std::list<Node> result;
@@ -463,8 +550,6 @@ std::vector<Graph::Path>
 Graph::kTHShortestPath(Node from, Node to, int K) {
   std::vector<Path> A(K);
 
-  std::cout <<  "hiiiiiiiiiiiii\n";
-
   Path result {findShortestPath(from, to)};
   A[0] = result;
 
@@ -476,7 +561,6 @@ Graph::kTHShortestPath(Node from, Node to, int K) {
   std::set<Path> B;
 
   for (int k{1}; k < K; ++k) {
-    std::cout << "kkkkkkkkkkkkkkkkkkkkkk: " << k << std::endl;
     int size {static_cast<int>(A[k-1]->second.size())};
 
     for (int i{}; i < size - 2; ++i) {
@@ -517,8 +601,6 @@ Graph::kTHShortestPath(Node from, Node to, int K) {
 
         B.insert(totalPath);
       }
-
-      std::cout << "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\n";
     }
 
     if (B.empty()) {
@@ -539,9 +621,15 @@ TEST_CASE("g6: nasty test") {
   std::vector<Graph::Path> result;
   result = g.kTHShortestPath("a", "f", 4);
 
-  for (auto path : result) {
-    printPath(path);
-  }
+  CHECK(result[0].has_value());
+  CHECK(result[1].has_value());
+  CHECK(result[2].has_value());
+
+  CHECK(!result[3].has_value());
+
+  CHECK_EQ(result[0], Graph::Path{{19, {"a", "e", "f"}}});
+  CHECK_EQ(result[1], Graph::Path{{22, {"a", "d", "i", "f"}}});
+  CHECK_EQ(result[2], Graph::Path{{31, {"a", "b", "c", "g", "i", "f"}}});
 }
 
 
@@ -558,7 +646,6 @@ TEST_CASE("g6: nasty test") {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-TEST_SUITE_BEGIN("graph");
 
 // https://github.com/onqtam/doctest/issues/427
 class GraphPrivateMethodsTests {
@@ -573,11 +660,7 @@ class GraphPrivateMethodsTests {
     result = g.findShortestPath("k", "a");
     CHECK(result.has_value());
 
-    int correctResultDistance {20};
-    std::list<Graph::Node> correctResultPath{"k", "c", "g", "i", "f", "a"};
-
-    CHECK_EQ(result->first, correctResultDistance);
-    CHECK_EQ(result->second, correctResultPath);
+    CHECK_EQ(result, Graph::Path{{20, {"k", "c", "g", "i", "f", "a"}}});
 
     CHECK_EQ(g.getIthNodes(result, 2), Graph::Path{{6, {"k", "c"}}});
   }
@@ -700,26 +783,20 @@ class GraphPrivateMethodsTests {
 
   TEST_CASE_CLASS("g6: shortest path") {
     Graph g{"./graphs/g6"};
-    std::optional<std::pair<int, std::list<std::string>>> result;
+    Graph::Path result;
 
     SUBCASE("path 1") {
       result = g.findShortestPath("k", "a");
       CHECK(result.has_value());
 
-      int correctResultDistance {20};
-      std::list<std::string> correctResultPath{"k", "c", "g", "i", "f", "a"};
-      CHECK_EQ(result->first, correctResultDistance);
-      CHECK_EQ(result->second, correctResultPath);
+      CHECK_EQ(result, Graph::Path{{20, {"k", "c", "g", "i", "f", "a"}}});
     }
 
     SUBCASE("path 2") {
       result = g.findShortestPath("b", "a");
       CHECK(result.has_value());
 
-      int correctResultDistance {19};
-      std::list<std::string> correctResult{"b", "c", "g", "i", "f", "a"};
-      CHECK_EQ(result->first, correctResultDistance);
-      CHECK_EQ(result->second, correctResult);
+      CHECK_EQ(result, Graph::Path{{19, {"b", "c", "g", "i", "f", "a"}}});
     }
 
 
@@ -736,95 +813,5 @@ class GraphPrivateMethodsTests {
     }
   }
 };
-
-TEST_CASE("g1") {
-  Graph g{"./graphs/g1"};
-  //  std::cout << "here\n";
-  // g.print();
-
-  SUBCASE("isPath: path") {
-    CHECK(g.isPath("a", "b"));
-    CHECK(g.isPath("a", "i"));
-    CHECK(!g.isPath("d", "b"));
-    CHECK(!g.isPath("i", "a"));
-  }
-
-  SUBCASE("isPath: loop") {
-    CHECK(g.isPath("a", "a"));
-    CHECK(g.isPath("b", "b"));
-    CHECK(!g.isPath("g", "g"));
-  }
-
-  SUBCASE("isPath: mother") {
-    CHECK(g.isPath("a"));
-    CHECK(g.isPath("b"));
-    CHECK(!g.isPath("g"));
-  }
-
-  SUBCASE("") {
-    using List = std::list<std::pair<Graph::Node, Graph::Node>>;
-    List deadEnds{g.getDeadEnds()};
-
-    REQUIRE(!deadEnds.empty());
-
-    CHECK_EQ(deadEnds.size(), 3);
-
-    // sorted this manually
-    List expectedResult {{"a", "d"}, {"g", "h"}, {"g", "i"}};
-    deadEnds.sort();
-    CHECK_EQ(deadEnds, expectedResult);
-  }
-
-  SUBCASE("Eulerian path") {
-    std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
-    CHECK(!result.has_value());
-  }
-}
-
-TEST_CASE("g2: linked list") {
-  Graph g{"./graphs/g2"};
-
-  SUBCASE("Eulerian path") {
-    std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
-    CHECK(result.has_value());
-    std::list<Graph::Node> correctResult{"a", "b", "c", "d", "e"};
-    CHECK_EQ(*result, correctResult);
-  }
-}
-
-TEST_CASE("g3: eulerian path with a few loops") {
-  Graph g{"./graphs/g3"};
-
-  SUBCASE("Eulerian path") {
-    std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
-    CHECK(result.has_value());
-    std::list<Graph::Node> correctResult{"f", "g", "h", "i", "f", "d", "a",
-      "b", "c", "d", "e"};
-    CHECK_EQ(*result, correctResult);
-  }
-}
-
-TEST_CASE("g4: no edges") {
-  Graph g{"./graphs/g4"};
-
-  SUBCASE("Eulerian path") {
-    std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
-    CHECK(!result.has_value());
-  }
-}
-
-TEST_CASE("g5: cycle with two loops") {
-  Graph g{"./graphs/g5"};
-
-  SUBCASE("Eulerian path") {
-    std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
-    CHECK(result.has_value());
-    std::list<Graph::Node> correctResult{"a", "e", "f", "g", "a", "b", "c",
-      "d", "a"};
-    CHECK_EQ(*result, correctResult);
-  }
-}
-
-
 
 TEST_SUITE_END();  // graph
