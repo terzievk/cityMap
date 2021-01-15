@@ -54,7 +54,6 @@ are to O(n)
 
 ```
 ### Why unordered_map(hash table)? Why not map(red-black tree) or vector(dynamic array)?
-# don't forget to write this
 In different scenarion, different data structures might yield optimal results.
 - maps have better worst case insertion/deletion - O(log n)
   - better for reading the adjacency list and checking if an element is already one,
@@ -164,6 +163,10 @@ instead of this:
     for (int i{}; i < size - 2; ++i) {
 ```
 
+### to do
+- wrap
+- exceptions
+- input validation
 
 # the 7 requirements
 
