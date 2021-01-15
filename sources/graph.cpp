@@ -162,7 +162,7 @@ bool Graph::isPath(Node from, std::optional<Node> to) {
   return true;
 }
 
-std::list<std::pair<std::string, std::string>> Graph::getDeadEnds() {
+std::list<std::pair<Graph::Node, Graph::Node>> Graph::getDeadEnds() {
   std::unordered_set<Node> leafs;
   for (auto nodePair : nodes) {
     Node current{nodePair.first};
@@ -307,7 +307,8 @@ std::optional<std::list<Graph::Node>> Graph::findEulerianPath() {
   return std::nullopt;
 }
 
-std::optional<std::pair<int, std::list<std::string>>>
+
+Graph::Path
 Graph::findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore,
                         std::set<std::pair<Node, Node>> edgesToIgnore) {
   std::unordered_map<Node, Distance> d;
@@ -369,7 +370,7 @@ Graph::findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore,
   return std::make_pair(d[to], result);
 }
 
-void printPath(std::optional<std::pair<int, std::list<std::string>>> path) {
+void printPath(Graph::Path path) {
   std::cout << "\n\n";
   if (path.has_value()) {
     std::cout << "distance: " << path->first;
@@ -385,8 +386,7 @@ void printPath(std::optional<std::pair<int, std::list<std::string>>> path) {
 }
 
 // returns the i-th node
-std::string
-getIthNode(std::optional<std::pair<int, std::list<std::string>>> path, int i) {
+Graph::Node getIthNode(Graph::Path path, int i) {
   // maybe too slow?
   auto it {path->second.begin()};
   std::advance(it, i);
@@ -394,17 +394,14 @@ getIthNode(std::optional<std::pair<int, std::list<std::string>>> path, int i) {
 }
 
 TEST_CASE("get i-th node") {
-  using Path = std::optional<std::pair<int, std::list<std::string>>>;
-  Path p{{0, {"a", "b", "c", "d"}}};
+  Graph::Path p{{0, {"a", "b", "c", "d"}}};
 
   CHECK_EQ(getIthNode(p, 3), "d");
 }
 
 // returns the first i nodes
-std::optional<std::pair<int, std::list<std::string>>>
-Graph::getIthNodes(std::optional<std::pair<int, std::list<std::string>>> path,
-                   int i) {
-  std::list<std::string> result;
+Graph::Path Graph::getIthNodes(Path path, int i) {
+  std::list<Graph::Node> result;
   auto it {path->second.begin()};
   for (int j{}; j < i; ++j) {
     // postfix ++ has higher precedence than *,but anyway
@@ -435,11 +432,8 @@ Graph::getIthNodes(std::optional<std::pair<int, std::list<std::string>>> path,
 */
 
 ////////////////////////////////////////////////////////////////////////////////
-std::vector<std::optional<std::pair<int, std::list<std::string>>>>
+std::vector<Graph::Path>
 Graph::kTHShortestPath(Node from, Node to, int K) {
-  using Path = std::optional<std::pair<int, std::list<std::string>>>;
-
-
   std::vector<Path> A(K);
 
   std::cout <<  "hiiiiiiiiiiiii\n";
@@ -506,7 +500,6 @@ Graph::kTHShortestPath(Node from, Node to, int K) {
 
 // TEST_CASE("g6: k-th shortest") {
 //   Graph g{"./graphs/g6"};
-//   using Path = std::optional<std::pair<int, std::list<std::string>>>;
 //   std::vector<Path> result;
 //   result = g.kTHShortestPath("a", "f", 4);
 
@@ -539,19 +532,18 @@ class GraphPrivateMethodsTests {
  private:
   TEST_CASE_CLASS("get i-th nodes") {
     Graph g{"./graphs/g6"};
-    using Path = std::optional<std::pair<int, std::list<std::string>>>;
-    Path result;
+    Graph::Path result;
 
     result = g.findShortestPath("k", "a");
     CHECK(result.has_value());
 
     int correctResultDistance {20};
-    std::list<std::string> correctResultPath{"k", "c", "g", "i", "f", "a"};
+    std::list<Graph::Node> correctResultPath{"k", "c", "g", "i", "f", "a"};
 
     CHECK_EQ(result->first, correctResultDistance);
     CHECK_EQ(result->second, correctResultPath);
 
-    CHECK_EQ(g.getIthNodes(result, 2), Path{{6, {"k", "c"}}});
+    CHECK_EQ(g.getIthNodes(result, 2), Graph::Path{{6, {"k", "c"}}});
   }
 
   TEST_CASE_CLASS("") {
@@ -734,22 +726,21 @@ TEST_CASE("g1") {
   }
 
   SUBCASE("") {
-    std::list<std::pair<std::string, std::string>> deadEnds{g.getDeadEnds()};
+    using List = std::list<std::pair<Graph::Node, Graph::Node>>;
+    List deadEnds{g.getDeadEnds()};
 
     REQUIRE(!deadEnds.empty());
 
     CHECK_EQ(deadEnds.size(), 3);
 
     // sorted this manually
-    std::list<std::pair<std::string, std::string>> expectedResult {{"a", "d"},
-                                                                   {"g", "h"},
-                                                                   {"g", "i"}};
+    List expectedResult {{"a", "d"}, {"g", "h"}, {"g", "i"}};
     deadEnds.sort();
     CHECK_EQ(deadEnds, expectedResult);
   }
 
   SUBCASE("Eulerian path") {
-    std::optional<std::list<std::string>> result{g.findEulerianPath()};
+    std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
     CHECK(!result.has_value());
   }
 }
@@ -758,9 +749,9 @@ TEST_CASE("g2: linked list") {
   Graph g{"./graphs/g2"};
 
   SUBCASE("Eulerian path") {
-    std::optional<std::list<std::string>> result{g.findEulerianPath()};
+    std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
     CHECK(result.has_value());
-    std::list<std::string> correctResult{"a", "b", "c", "d", "e"};
+    std::list<Graph::Node> correctResult{"a", "b", "c", "d", "e"};
     CHECK_EQ(*result, correctResult);
   }
 }
@@ -769,9 +760,9 @@ TEST_CASE("g3: eulerian path with a few loops") {
   Graph g{"./graphs/g3"};
 
   SUBCASE("Eulerian path") {
-    std::optional<std::list<std::string>> result{g.findEulerianPath()};
+    std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
     CHECK(result.has_value());
-    std::list<std::string> correctResult{"f", "g", "h", "i", "f", "d", "a",
+    std::list<Graph::Node> correctResult{"f", "g", "h", "i", "f", "d", "a",
       "b", "c", "d", "e"};
     CHECK_EQ(*result, correctResult);
   }
@@ -781,7 +772,7 @@ TEST_CASE("g4: no edges") {
   Graph g{"./graphs/g4"};
 
   SUBCASE("Eulerian path") {
-    std::optional<std::list<std::string>> result{g.findEulerianPath()};
+    std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
     CHECK(!result.has_value());
   }
 }
@@ -790,9 +781,9 @@ TEST_CASE("g5: cycle with two loops") {
   Graph g{"./graphs/g5"};
 
   SUBCASE("Eulerian path") {
-    std::optional<std::list<std::string>> result{g.findEulerianPath()};
+    std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
     CHECK(result.has_value());
-    std::list<std::string> correctResult{"a", "e", "f", "g", "a", "b", "c",
+    std::list<Graph::Node> correctResult{"a", "e", "f", "g", "a", "b", "c",
       "d", "a"};
     CHECK_EQ(*result, correctResult);
   }

@@ -11,10 +11,13 @@
 #include <utility>
 
 class Graph {
+ public:
   using Node = std::string;
   using Distance = int;
   using AdjacentTo = std::unordered_map<Node, Distance>;
+  using Path = std::optional<std::pair<Distance, std::list<Node>>>;
 
+ private:
   std::unordered_map<Node, AdjacentTo*> nodes;
 
   bool isNode(Node);
@@ -34,9 +37,7 @@ class Graph {
   void hierholzerDFSHelper(Node from, std::list<Node> *result,
                            std::set<std::pair<Node, Node>> *visited);
 
-  std::optional<std::pair<int, std::list<std::string>>>
-  getIthNodes(std::optional<std::pair<int, std::list<std::string>>> path,
-              int i);
+  Path getIthNodes(Path path, int i);
 
   Graph() {}  // used only in tests
   friend class GraphPrivateMethodsTests;
@@ -51,14 +52,12 @@ class Graph {
   std::list<std::pair<std::string, std::string>> getDeadEnds();
   std::optional<std::list<std::string>> findEulerianPath();
 
-  std::optional<std::pair<Distance, std::list<Node>>>
-  findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore
-                   = std::set<Node>(), std::set<std::pair<Node, Node>>
-                   edgesToIgnore = std::set<std::pair<Node, Node>> ());
+  Path findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore
+                        = std::set<Node>(), std::set<std::pair<Node, Node>>
+                        edgesToIgnore = std::set<std::pair<Node, Node>> ());
 
 
-  std::vector<std::optional<std::pair<Distance, std::list<Node>>>>
-  kTHShortestPath(Node from, Node to, int k);
+  std::vector<Path> kTHShortestPath(Node from, Node to, int k);
 };
 
 #endif  // INCLUDES_GRAPH_H_
