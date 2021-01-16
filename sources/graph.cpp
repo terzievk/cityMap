@@ -22,30 +22,60 @@
 
 TEST_SUITE_BEGIN("graph");
 
+
+bool isDigit(std::string s) {
+  for (const auto &c : s) {
+    if (!isdigit(c)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+
 Graph::Graph(std::ifstream &fin) {
   while (fin) {
     std::string line;
     std::getline(fin, line);
-    // well formanted files finish with '\n' after the last line
-    if (!line.empty()) {
-      std::stringstream ss;
-      ss << line;
-      std::string from;
-      ss >> from;
-      addNode(from);
-      while (ss) {
-        std::string to;
-        ss >> to;
 
-        if (to.empty()) {  // handle the end of the line
-          break;
-        }
-
-        int dist;
-        ss >> dist;
-
-        addEdge(from, to, dist);
+    if (line.empty()) {
+      if (fin.eof()) {
+        break;
       }
+
+      throw std::runtime_error("Wrong file format. There is an empty line " +
+                               static_cast<std::string>("before EOF"));
+    }
+
+    std::stringstream ss(line);
+    std::string from;
+
+    if (!(ss >> from)) {
+      throw std::runtime_error("Couldn't read from line: " + line);
+    }
+    addNode(from);                 ////////////////
+    while (ss) {
+      std::string to;
+      // if there is nothing left to read
+      if (!(ss >> to)) {
+        break;
+      }
+
+      std::string dist;
+      if (!(ss >> dist)) {
+        // if we read a crossroad, we should read a distance
+        throw std::runtime_error("Couldn't read the distance between " +
+                                 from + " and " + to + " on line: " + line);
+      }
+
+      if (!isDigit(dist)) {
+        throw std::runtime_error("Invalid distance " + dist +" between " +
+                                 from + " and " + to + " on line: " + line);
+      }
+
+      addEdge(from, to, stoi(dist));   /////////
+
     }
   }
 }

@@ -1,13 +1,19 @@
 // Copyright
 #include <iostream>
+#include <fstream>
+
+#include <exception>
+
+#include <cctype>
 #include <cassert>
+
 
 
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "../doctest/doctest.h"
-
 #include "../includes/graph.h"
 
+// std::string files[] {,
 void printPath(std::optional<std::pair<int, std::list<std::string>>> path);
 
 void helper() {
@@ -16,10 +22,14 @@ void helper() {
     std::cout << "error\n";
   }
 
-  Graph g(fin);
-  g.print();
+  try {
+    Graph g(fin);
+    g.print();
+    std::cout << g.isPath("k") << std::endl;
+  } catch (const std::exception &exception) {
+    std::cerr << "\nCouldn't read the file: " << exception.what() << '\n';
+  }
 
-  std::cout << g.isPath("k") << std::endl;
   fin.close();
 }
 
