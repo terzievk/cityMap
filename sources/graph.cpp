@@ -50,42 +50,6 @@ Graph::Graph(std::ifstream &fin) {
   }
 }
 
-Graph::Graph(std::string filename) {
-  // assume correctly formatted input
-  std::ifstream input(filename);
-  // throw exception if we couldn't open the file
-  if (!input) {
-    std::cout << "wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww\n";
-  }  // does this look like an exception??
-  while (input) {
-    std::string line;
-    std::getline(input, line);
-    // well formanted files finish with '\n' after the last line
-    if (!line.empty()) {
-      std::stringstream ss;
-      ss << line;
-      std::string from;
-      ss >> from;
-      addNode(from);
-      while (ss) {
-        std::string to;
-        ss >> to;
-
-        if (to.empty()) {  // handle the end of the line
-          break;
-        }
-
-        int dist;
-        ss >> dist;
-
-        addEdge(from, to, dist);
-      }
-    }
-  }
-
-  input.close();
-}
-
 Graph::~Graph() {
   for (auto elem : nodes) {
     delete elem.second;
@@ -192,7 +156,11 @@ bool Graph::isPath(Node from, std::optional<Node> to) {
 }
 
 TEST_CASE("g1") {
-  Graph g{"./graphs/g1"};
+  std::ifstream fin("./graphs/g1");
+  REQUIRE(fin);
+  Graph g(fin);
+  fin.close();
+
   //  std::cout << "here\n";
   // g.print();
 
@@ -214,6 +182,7 @@ TEST_CASE("g1") {
     CHECK(g.isPath("b"));
     CHECK(!g.isPath("g"));
   }
+
 }
 
 std::list<std::pair<Graph::Node, Graph::Node>> Graph::getDeadEnds() {
@@ -241,7 +210,11 @@ std::list<std::pair<Graph::Node, Graph::Node>> Graph::getDeadEnds() {
 }
 
 TEST_CASE("g1") {
-  Graph g{"./graphs/g1"};
+  std::ifstream fin("./graphs/g1");
+  REQUIRE(fin);
+  Graph g(fin);
+  fin.close();
+
   //  std::cout << "here\n";
   // g.print();
 
@@ -257,6 +230,7 @@ TEST_CASE("g1") {
     // sorted this manually
     CHECK_EQ(deadEnds, List {{"a", "d"}, {"g", "h"}, {"g", "i"}});
   }
+
 }
 
 
@@ -382,7 +356,11 @@ std::optional<std::list<Graph::Node>> Graph::findEulerianPath() {
 }
 
 TEST_CASE("g1") {
-  Graph g{"./graphs/g1"};
+  std::ifstream fin("./graphs/g1");
+  REQUIRE(fin);
+  Graph g(fin);
+  fin.close();
+
   //  std::cout << "here\n";
   // g.print();
 
@@ -390,10 +368,15 @@ TEST_CASE("g1") {
     std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
     CHECK(!result.has_value());
   }
+
 }
 
 TEST_CASE("g2: linked list") {
-  Graph g{"./graphs/g2"};
+  std::ifstream fin("./graphs/g2");
+  REQUIRE(fin);
+  Graph g(fin);
+  fin.close();
+
 
   SUBCASE("Eulerian path") {
     std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
@@ -401,10 +384,15 @@ TEST_CASE("g2: linked list") {
 
     CHECK_EQ(*result, std::list<Graph::Node> {"a", "b", "c", "d", "e"});
   }
+
 }
 
 TEST_CASE("g3: eulerian path with a few loops") {
-  Graph g{"./graphs/g3"};
+  std::ifstream fin("./graphs/g3");
+  REQUIRE(fin);
+  Graph g(fin);
+  fin.close();
+
 
   SUBCASE("Eulerian path") {
     std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
@@ -413,19 +401,29 @@ TEST_CASE("g3: eulerian path with a few loops") {
     CHECK_EQ(*result, std::list<Graph::Node> {"f", "g", "h", "i", "f", "d",
         "a", "b", "c", "d", "e"});
   }
+
 }
 
 TEST_CASE("g4: no edges") {
-  Graph g{"./graphs/g4"};
+  std::ifstream fin("./graphs/g4");
+  REQUIRE(fin);
+  Graph g(fin);
+  fin.close();
+
 
   SUBCASE("Eulerian path") {
     std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
     CHECK(!result.has_value());
   }
+
 }
 
 TEST_CASE("g5: cycle with two loops") {
-  Graph g{"./graphs/g5"};
+  std::ifstream fin("./graphs/g5");
+  REQUIRE(fin);
+  Graph g(fin);
+  fin.close();
+
 
   SUBCASE("Eulerian path") {
     std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
@@ -434,6 +432,7 @@ TEST_CASE("g5: cycle with two loops") {
     CHECK_EQ(*result, std::list<Graph::Node> {"a", "e", "f", "g", "a", "b", "c",
         "d", "a"});
   }
+
 }
 
 
@@ -629,7 +628,12 @@ Graph::kTHShortestPath(Node from, Node to, int K,
 }
 
 TEST_CASE("g6: nasty test") {
-  Graph g{"./graphs/g6"};
+  std::ifstream fin("./graphs/g6");
+  REQUIRE(fin);
+  Graph g(fin);
+  fin.close();
+
+
   std::vector<Graph::Path> result;
   result = g.kTHShortestPath("a", "f", 4);
 
@@ -642,6 +646,7 @@ TEST_CASE("g6: nasty test") {
   CHECK_EQ(result[0], Graph::Path{{19, {"a", "e", "f"}}});
   CHECK_EQ(result[1], Graph::Path{{22, {"a", "d", "i", "f"}}});
   CHECK_EQ(result[2], Graph::Path{{31, {"a", "b", "c", "g", "i", "f"}}});
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -663,7 +668,11 @@ class GraphPrivateMethodsTests {
 
  private:
   TEST_CASE_CLASS("get i-th nodes") {
-    Graph g{"./graphs/g6"};
+    std::ifstream fin("./graphs/g6");
+    REQUIRE(fin);
+    Graph g(fin);
+    fin.close();
+
     Graph::Path result;
 
     result = g.findShortestPath("k", "a");
@@ -672,6 +681,7 @@ class GraphPrivateMethodsTests {
     CHECK_EQ(result, Graph::Path{{20, {"k", "c", "g", "i", "f", "a"}}});
 
     CHECK_EQ(g.getIthNodes(result, 2), Graph::Path{{6, {"k", "c"}}});
+
   }
 
   TEST_CASE_CLASS("") {
@@ -791,7 +801,11 @@ class GraphPrivateMethodsTests {
   }
 
   TEST_CASE_CLASS("g6: shortest path") {
-    Graph g{"./graphs/g6"};
+    std::ifstream fin("./graphs/g6");
+    REQUIRE(fin);
+    Graph g(fin);
+    fin.close();
+
     Graph::Path result;
 
     SUBCASE("path 1") {
