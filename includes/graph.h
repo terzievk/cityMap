@@ -49,6 +49,7 @@ class Graph {
 
  public:
   explicit Graph(std::string filename);
+  explicit Graph(std::ifstream &fin);
   ~Graph();
 
   void print();

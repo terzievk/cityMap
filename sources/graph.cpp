@@ -22,6 +22,34 @@
 
 TEST_SUITE_BEGIN("graph");
 
+Graph::Graph(std::ifstream &fin) {
+  while (fin) {
+    std::string line;
+    std::getline(fin, line);
+    // well formanted files finish with '\n' after the last line
+    if (!line.empty()) {
+      std::stringstream ss;
+      ss << line;
+      std::string from;
+      ss >> from;
+      addNode(from);
+      while (ss) {
+        std::string to;
+        ss >> to;
+
+        if (to.empty()) {  // handle the end of the line
+          break;
+        }
+
+        int dist;
+        ss >> dist;
+
+        addEdge(from, to, dist);
+      }
+    }
+  }
+}
+
 Graph::Graph(std::string filename) {
   // assume correctly formatted input
   std::ifstream input(filename);

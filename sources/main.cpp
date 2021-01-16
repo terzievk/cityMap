@@ -11,8 +11,16 @@
 void printPath(std::optional<std::pair<int, std::list<std::string>>> path);
 
 void helper() {
-  Graph g{"./graphs/g7"};
+  std::ifstream fin("./graphs/g6");
+  if (!fin) {
+    std::cout << "error\n";
+  }
+
+  Graph g(fin);
   g.print();
+
+  std::cout << g.isPath("k") << std::endl;
+  fin.close();
 }
 
 
@@ -26,7 +34,7 @@ int main(int argc, char *argv[]) {
   }
   //////////////////////////////////////////////////////////////////////////////
   std::cout << "Hello, World!\n";
-  // helper();
+  helper();
 
 
   //////////////////////////////////////////////////////////////////////////////
