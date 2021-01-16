@@ -50,16 +50,10 @@ Graph::Graph(std::ifstream &fin) {
   }
 }
 
-Graph::~Graph() {
-  for (auto elem : nodes) {
-    delete elem.second;
-  }
-}
-
 void Graph::print() {
-  for (auto fromPair : nodes) {
+  for (const auto &fromPair : nodes) {
     std::cout << "from: " << fromPair.first;
-    for (auto toPair : *fromPair.second) {
+    for (const auto &toPair : *fromPair.second) {
       std::cout << " to: " << toPair.first << ", " << toPair.second;
     }
     std::cout << std::endl;
@@ -72,7 +66,7 @@ bool Graph::isNode(Node n) {
 
 void Graph::addNode(Node n) {
   // insert inserts if there is no such element
-  nodes.insert({n, new AdjacentTo});
+  nodes.insert({n, std::make_unique<AdjacentTo>()});
   assert(nodes[n] && "new should \"always\" work");
 }
 
@@ -83,8 +77,11 @@ bool Graph::hasAdjacentTo(Node n) {
 
 Graph::AdjacentTo* Graph::getAdjacentToPointer(Node n) {
   assert(isNode(n) && "should be a node");
+  const Pointer& temp = nodes.find(n)->second;
+  assert(temp && "unique pointer has no value");
 
-  return nodes.find(n)->second;
+
+  return temp.get();
 }
 
 bool Graph::isEdge(Node from, Node to) {
@@ -182,12 +179,11 @@ TEST_CASE("g1") {
     CHECK(g.isPath("b"));
     CHECK(!g.isPath("g"));
   }
-
 }
 
 std::list<std::pair<Graph::Node, Graph::Node>> Graph::getDeadEnds() {
   std::unordered_set<Node> leafs;
-  for (auto nodePair : nodes) {
+  for (const auto &nodePair : nodes) {
     Node current{nodePair.first};
     if (!hasAdjacentTo(current)) {
       leafs.insert(current);
@@ -196,9 +192,9 @@ std::list<std::pair<Graph::Node, Graph::Node>> Graph::getDeadEnds() {
 
   std::list<std::pair<Node, Node>> result;
 
-  for (auto nodePair : nodes) {
+  for (const auto &nodePair : nodes) {
     Node from{nodePair.first};
-    for (auto adjPair : *nodePair.second) {
+    for (const auto &adjPair : *nodePair.second) {
       Node to{adjPair.first};
       if (leafs.contains(to)) {
         result.push_back({from, to});
@@ -237,11 +233,11 @@ TEST_CASE("g1") {
 
 void Graph::fillInOut(std::unordered_map<Node, std::pair<int, int>> *inOut) {
   // add each node to inOut and count the out nodes;
-  for (auto nodePair : nodes) {
+  for (const auto &nodePair : nodes) {
     inOut->insert({nodePair.first, {0, nodePair.second->size()}});
   }
-  for (auto nodePair : nodes) {
-    for (auto adjPair : *nodePair.second) {
+  for (const auto &nodePair : nodes) {
+    for (const auto &adjPair : *nodePair.second) {
       // ++ in
       ++inOut->find(adjPair.first)->second.first;
     }
@@ -253,7 +249,7 @@ bool Graph::isEulerianPath(std::unordered_map<Node,
   int numberOfStartNodes{};
   int numberOfEndNodes{};
 
-  for (auto each : *inOut) {
+  for (const auto &each : *inOut) {
     int in{each.second.first};
     int out{each.second.second};
     int dif{in - out};
@@ -287,7 +283,7 @@ bool Graph::isEulerianPath(std::unordered_map<Node,
 
 Graph::Node Graph::findStartingNode(std::unordered_map<Node,
                                     std::pair<int, int>> *inOut) {
-  for (auto each : *inOut) {
+  for (const auto &each : *inOut) {
     int in{each.second.first};
     int out{each.second.second};
     if (out - in == 1) {  // at most there should be only one such element
@@ -299,7 +295,7 @@ Graph::Node Graph::findStartingNode(std::unordered_map<Node,
   // just pick a node with edge going out
   // we know there is an edge going out, because we have checked in
   // findEulerianPath() if the numberOfEdges is 0
-  for (auto each : *inOut) {
+  for (const auto &each : *inOut) {
     int out{each.second.second};
     if (out) {
       return each.first;
@@ -311,7 +307,7 @@ Graph::Node Graph::findStartingNode(std::unordered_map<Node,
 
 void Graph::hierholzerDFSHelper(Node from, std::list<Node> *result,
                                 std::set<std::pair<Node, Node>> *visited) {
-  for (auto adjPair : *getAdjacentToPointer(from)) {
+  for (const auto &adjPair : *getAdjacentToPointer(from)) {
     Node to {adjPair.first};
     if (!visited->contains({from, to})) {
       visited->insert({from, to});
@@ -328,7 +324,7 @@ std::optional<std::list<Graph::Node>> Graph::findEulerianPath() {
 
   int numberOfEdges{};
   // count all the edges
-  for (auto elem : inOut) {
+  for (const auto &elem : inOut) {
     numberOfEdges += elem.second.second;
   }
 
@@ -368,7 +364,6 @@ TEST_CASE("g1") {
     std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
     CHECK(!result.has_value());
   }
-
 }
 
 TEST_CASE("g2: linked list") {
@@ -377,14 +372,12 @@ TEST_CASE("g2: linked list") {
   Graph g(fin);
   fin.close();
 
-
   SUBCASE("Eulerian path") {
     std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
     CHECK(result.has_value());
 
     CHECK_EQ(*result, std::list<Graph::Node> {"a", "b", "c", "d", "e"});
   }
-
 }
 
 TEST_CASE("g3: eulerian path with a few loops") {
@@ -393,7 +386,6 @@ TEST_CASE("g3: eulerian path with a few loops") {
   Graph g(fin);
   fin.close();
 
-
   SUBCASE("Eulerian path") {
     std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
     CHECK(result.has_value());
@@ -401,7 +393,6 @@ TEST_CASE("g3: eulerian path with a few loops") {
     CHECK_EQ(*result, std::list<Graph::Node> {"f", "g", "h", "i", "f", "d",
         "a", "b", "c", "d", "e"});
   }
-
 }
 
 TEST_CASE("g4: no edges") {
@@ -410,12 +401,10 @@ TEST_CASE("g4: no edges") {
   Graph g(fin);
   fin.close();
 
-
   SUBCASE("Eulerian path") {
     std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
     CHECK(!result.has_value());
   }
-
 }
 
 TEST_CASE("g5: cycle with two loops") {
@@ -424,7 +413,6 @@ TEST_CASE("g5: cycle with two loops") {
   Graph g(fin);
   fin.close();
 
-
   SUBCASE("Eulerian path") {
     std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
     CHECK(result.has_value());
@@ -432,10 +420,7 @@ TEST_CASE("g5: cycle with two loops") {
     CHECK_EQ(*result, std::list<Graph::Node> {"a", "e", "f", "g", "a", "b", "c",
         "d", "a"});
   }
-
 }
-
-
 
 Graph::Path
 Graph::findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore,
@@ -450,7 +435,7 @@ Graph::findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore,
 
   std::unordered_map<Node, Distance> d;
 
-  for (auto NodePair : nodes) {
+  for (const auto &NodePair : nodes) {
     d.insert({NodePair.first, INT_MAX});
   }
 
@@ -514,7 +499,7 @@ void printPath(Graph::Path path) {
   if (path.has_value()) {
     std::cout << "distance: " << path->first;
     std::cout << "\npath: ";
-    for (auto node : path->second) {
+    for (const auto &node : path->second) {
       std::cout << node << ' ';
     }
     std::cout << std::endl;
@@ -646,7 +631,6 @@ TEST_CASE("g6: nasty test") {
   CHECK_EQ(result[0], Graph::Path{{19, {"a", "e", "f"}}});
   CHECK_EQ(result[1], Graph::Path{{22, {"a", "d", "i", "f"}}});
   CHECK_EQ(result[2], Graph::Path{{31, {"a", "b", "c", "g", "i", "f"}}});
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -658,8 +642,6 @@ TEST_CASE("g6: nasty test") {
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-
-
 
 // https://github.com/onqtam/doctest/issues/427
 class GraphPrivateMethodsTests {
@@ -681,7 +663,6 @@ class GraphPrivateMethodsTests {
     CHECK_EQ(result, Graph::Path{{20, {"k", "c", "g", "i", "f", "a"}}});
 
     CHECK_EQ(g.getIthNodes(result, 2), Graph::Path{{6, {"k", "c"}}});
-
   }
 
   TEST_CASE_CLASS("") {

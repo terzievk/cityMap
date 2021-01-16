@@ -8,17 +8,19 @@
 #include <unordered_map>
 
 #include <string>
+#include <memory>
 #include <utility>
 
 class Graph {
  public:
   using Node = std::string;
   using Distance = int;
-  using AdjacentTo = std::unordered_map<Node, Distance>;
   using Path = std::optional<std::pair<Distance, std::list<Node>>>;
+  using AdjacentTo = std::unordered_map<Node, Distance>;
+  using Pointer = std::unique_ptr<AdjacentTo>;
 
  private:
-  std::unordered_map<Node, AdjacentTo*> nodes;
+  std::unordered_map<Node, Pointer> nodes;
 
   bool isNode(Node);
   void addNode(Node);
@@ -49,7 +51,6 @@ class Graph {
 
  public:
   explicit Graph(std::ifstream &fin);
-  ~Graph();
 
   void print();
 
