@@ -54,7 +54,8 @@ Graph::Graph(std::ifstream &fin) {
     if (!(ss >> from)) {
       throw std::runtime_error("Couldn't read from line: " + line);
     }
-    addNode(from);                 ////////////////
+    addNode(from);
+
     while (ss) {
       std::string to;
       // if there is nothing left to read
@@ -74,8 +75,7 @@ Graph::Graph(std::ifstream &fin) {
                                  from + " and " + to + " on line: " + line);
       }
 
-      addEdge(from, to, stoi(dist));   /////////
-
+      addEdge(from, to, stoi(dist));
     }
   }
 }
@@ -256,7 +256,6 @@ TEST_CASE("g1") {
     // sorted this manually
     CHECK_EQ(deadEnds, List {{"a", "d"}, {"g", "h"}, {"g", "i"}});
   }
-
 }
 
 
