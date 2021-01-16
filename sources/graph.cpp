@@ -34,7 +34,14 @@ bool isDigit(std::string s) {
 }
 
 
-Graph::Graph(std::ifstream &fin) {
+Graph::Graph(std::string filename) {
+  std::ifstream fin(filename);
+  if (!fin) {
+    std::cout << "error\n";
+    throw std::runtime_error("Couldn't read file: " + filename +
+                             ". Make sure such file exists.");
+  }
+
   while (fin) {
     std::string line;
     std::getline(fin, line);
@@ -78,6 +85,9 @@ Graph::Graph(std::ifstream &fin) {
       addEdge(from, to, stoi(dist));
     }
   }
+
+  fin.close();
+
 }
 
 void Graph::print() {
@@ -183,10 +193,7 @@ bool Graph::isPath(Node from, std::optional<Node> to) {
 }
 
 TEST_CASE("g1") {
-  std::ifstream fin("./graphs/g1");
-  REQUIRE(fin);
-  Graph g(fin);
-  fin.close();
+  Graph g("./graphs/g1");
 
   //  std::cout << "here\n";
   // g.print();
@@ -236,10 +243,7 @@ std::list<std::pair<Graph::Node, Graph::Node>> Graph::getDeadEnds() {
 }
 
 TEST_CASE("g1") {
-  std::ifstream fin("./graphs/g1");
-  REQUIRE(fin);
-  Graph g(fin);
-  fin.close();
+  Graph g("./graphs/g1");
 
   //  std::cout << "here\n";
   // g.print();
@@ -381,10 +385,7 @@ std::optional<std::list<Graph::Node>> Graph::findEulerianPath() {
 }
 
 TEST_CASE("g1") {
-  std::ifstream fin("./graphs/g1");
-  REQUIRE(fin);
-  Graph g(fin);
-  fin.close();
+  Graph g("./graphs/g1");
 
   //  std::cout << "here\n";
   // g.print();
@@ -396,10 +397,7 @@ TEST_CASE("g1") {
 }
 
 TEST_CASE("g2: linked list") {
-  std::ifstream fin("./graphs/g2");
-  REQUIRE(fin);
-  Graph g(fin);
-  fin.close();
+  Graph g("./graphs/g2");
 
   SUBCASE("Eulerian path") {
     std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
@@ -410,10 +408,7 @@ TEST_CASE("g2: linked list") {
 }
 
 TEST_CASE("g3: eulerian path with a few loops") {
-  std::ifstream fin("./graphs/g3");
-  REQUIRE(fin);
-  Graph g(fin);
-  fin.close();
+  Graph g("./graphs/g3");
 
   SUBCASE("Eulerian path") {
     std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
@@ -425,10 +420,7 @@ TEST_CASE("g3: eulerian path with a few loops") {
 }
 
 TEST_CASE("g4: no edges") {
-  std::ifstream fin("./graphs/g4");
-  REQUIRE(fin);
-  Graph g(fin);
-  fin.close();
+  Graph g("./graphs/g4");
 
   SUBCASE("Eulerian path") {
     std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
@@ -437,10 +429,7 @@ TEST_CASE("g4: no edges") {
 }
 
 TEST_CASE("g5: cycle with two loops") {
-  std::ifstream fin("./graphs/g5");
-  REQUIRE(fin);
-  Graph g(fin);
-  fin.close();
+  Graph g("./graphs/g5");
 
   SUBCASE("Eulerian path") {
     std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
@@ -642,11 +631,7 @@ Graph::kTHShortestPath(Node from, Node to, int K,
 }
 
 TEST_CASE("g6: nasty test") {
-  std::ifstream fin("./graphs/g6");
-  REQUIRE(fin);
-  Graph g(fin);
-  fin.close();
-
+  Graph g("./graphs/g6");
 
   std::vector<Graph::Path> result;
   result = g.kTHShortestPath("a", "f", 4);
@@ -679,10 +664,7 @@ class GraphPrivateMethodsTests {
 
  private:
   TEST_CASE_CLASS("get i-th nodes") {
-    std::ifstream fin("./graphs/g6");
-    REQUIRE(fin);
-    Graph g(fin);
-    fin.close();
+    Graph g("./graphs/g6");
 
     Graph::Path result;
 
@@ -811,10 +793,7 @@ class GraphPrivateMethodsTests {
   }
 
   TEST_CASE_CLASS("g6: shortest path") {
-    std::ifstream fin("./graphs/g6");
-    REQUIRE(fin);
-    Graph g(fin);
-    fin.close();
+    Graph g("./graphs/g6");
 
     Graph::Path result;
 

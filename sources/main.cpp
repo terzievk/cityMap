@@ -12,25 +12,24 @@
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "../doctest/doctest.h"
 #include "../includes/graph.h"
+#include "../includes/city_map.h"
 
 // std::string files[] {,
 void printPath(std::optional<std::pair<int, std::list<std::string>>> path);
 
-void helper() {
-  std::ifstream fin("./graphs/g6");
-  if (!fin) {
-    std::cout << "error\n";
-  }
 
+void helper2() {
   try {
-    Graph g(fin);
+    Graph g("./graphs/g6");
     g.print();
     std::cout << g.isPath("k") << std::endl;
   } catch (const std::exception &exception) {
     std::cerr << "\nCouldn't read the file: " << exception.what() << '\n';
   }
+}
 
-  fin.close();
+void helper() {
+  CityMap city{};
 }
 
 
@@ -44,7 +43,7 @@ int main(int argc, char *argv[]) {
   }
   //////////////////////////////////////////////////////////////////////////////
   std::cout << "Hello, World!\n";
-  //  helper();
+  helper();
 
 
   //////////////////////////////////////////////////////////////////////////////

@@ -22,7 +22,6 @@ class Graph {
  private:
   std::unordered_map<Node, Pointer> nodes;
 
-  bool isNode(Node);
   void addNode(Node);
 
   bool hasAdjacentTo(Node);
@@ -50,10 +49,14 @@ class Graph {
   friend class GraphPrivateMethodsTests;
 
  public:
-  explicit Graph(std::ifstream &fin);
+  explicit Graph(std::string filename);
+
+  Graph(const Graph&) = delete;
+  Graph& operator=(const Graph&) = delete;
 
   void print();
 
+  bool isNode(Node);
   std::list<std::pair<Node, Node>> getDeadEnds();
   std::optional<std::list<Node>> findEulerianPath();
   bool isPath(Node from, std::optional<Node> to = std::optional<Node>());
