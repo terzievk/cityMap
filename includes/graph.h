@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include <string>
+#include <string_view>
 #include <memory>
 #include <utility>
 
@@ -17,7 +18,7 @@ class Graph {
   using Node = std::string;
   using Distance = int;
   using Path = std::optional<std::pair<Distance, std::list<Node>>>;
-  using AdjacentTo = std::unordered_map<Node, Distance>;
+  using AdjacentTo = std::unordered_map<std::string_view, Distance>;
   using Pointer = std::unique_ptr<AdjacentTo>;
 
  private:

@@ -141,7 +141,7 @@ void Graph::addEdge(Node from, Node to, Distance distance) {
   addNode(to);
 
   // will do nothing if such adjacent node exists
-  getAdjacentToPointer(from)->insert({to, distance});
+  getAdjacentToPointer(from)->insert({nodes.find(to)->first, distance});
 }
 
 bool Graph::isPath(Node from, std::optional<Node> to) {

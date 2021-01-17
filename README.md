@@ -81,11 +81,13 @@ the corresponding iterator is invalidated. ` So the adjacentTo nodes could be
 references to the nodes in the nodes map, but too much early optimization
 is not cool.
 std::string_view can be used to optimize the nodes memory.
-
 ~~Plus I don't know how exactly std::string works.
 I guess the compiler does a pretty good job at optimising the memory anyway...~~
 
 ![xkcd](https://imgs.xkcd.com/comics/optimization.png)
+
+### make AdjacentTo nodes string_view to save some copies
+see previous
 
 ### how to run
 - `make` runs creates the necessary object and dependencies files,
