@@ -34,7 +34,9 @@ class Graph {
   Path getIthNodes(Path path, int i);
 
   // Hierholzer helpers
-  void fillInOut(std::unordered_map<Node, std::pair<int, int>> *inOut);
+  void fillInOut(std::unordered_map<Node, std::pair<int, int>> *inOut,
+                 std::unordered_set<Node> nodesToIgnore);
+
   bool isEulerianPath(std::unordered_map<Node, std::pair<int, int>> *inOut);
   Node findStartingNode(std::unordered_map<Node, std::pair<int, int>> *inOut);
   void hierholzerDFSHelper(Node from, std::list<Node> *result,
@@ -56,7 +58,11 @@ class Graph {
   std::list<std::pair<Node, Node>> getDeadEnds();
   bool isPath(Node from, std::optional<Node> to = std::optional<Node>());
   // Hierholzer
-  Path findEulerianPath();
+  //  Path findEulerianPath();
+  Path findEulerianPath(std::unordered_set<Node> nodesToIgnore =
+                        std::unordered_set<Node>());
+
+
   // Dijkstra
   Path findShortestPath(Node from, Node to, std::unordered_set<Node>
                         nodesToIgnore = std::unordered_set<Node>(),

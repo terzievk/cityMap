@@ -261,19 +261,48 @@ TEST_CASE("g1") {
   }
 }
 
-
-
-void Graph::fillInOut(std::unordered_map<Node, std::pair<int, int>> *inOut) {
+void Graph::fillInOut(std::unordered_map<Node, std::pair<int, int>> *inOut,
+                      std::unordered_set<Node> nodesToIgnore) {
   // add each node to inOut and count the out nodes;
+
+  // fill inOut with all the nodes
   for (const auto &nodePair : nodes) {
-    inOut->insert({nodePair.first, {0, nodePair.second->size()}});
-  }
-  for (const auto &nodePair : nodes) {
-    for (const auto &adjPair : *nodePair.second) {
-      // ++ in
-      ++inOut->find(adjPair.first)->second.first;
+    Node from {nodePair.first};
+
+    if (!nodesToIgnore.contains(from)) {
+      inOut->insert({from, {0, 0}});
     }
   }
+
+  for (const auto &inOutNode : *inOut) {
+    Node from {inOutNode.first};
+    AdjacentTo *adjTo {getAdjacentToPointer(from)};
+
+    for (const auto &nodeDistancePair : *adjTo) {
+      Node to {nodeDistancePair.first};
+
+      if (!nodesToIgnore.contains(to)) {
+        // ++ from's out
+        ++inOut->find(from)->second.second;
+        // ++ to's in
+        ++inOut->find(to)->second.first;
+      }
+    }
+  }
+  // for (const auto &nodePair : nodes) {
+  //   // count the out
+  //   Node form {nodePair.first};
+  //   Node AdjTo {getAdjacentToPointer((nodePair.first))};
+  //   inOut->insert({from, {0, nodePair.second->size()}});
+  // }
+
+  // // count the in
+  // for (const auto &nodePair : nodes) {
+  //   for (const auto &adjPair : *nodePair.second) {
+  //     // ++ in
+  //     ++inOut->find(adjPair.first)->second.first;
+  //   }
+  // }
 }
 
 bool Graph::isEulerianPath(std::unordered_map<Node,
@@ -350,10 +379,13 @@ void Graph::hierholzerDFSHelper(Node from, std::list<Node> *result,
 }
 
 // using Path = std::optional<std::pair<Distance, std::list<Node>>>;
-Graph::Path Graph::findEulerianPath() {
+// Graph::Path Graph::findEulerianPath(std::unordered_set<Node> nodesToIgnore =
+//                                     std::unordered_set<Node>()) {
+
+Graph::Path Graph::findEulerianPath(std::unordered_set<Node> nodesToIgnore) {
   // for each node count the in and out edges
   std::unordered_map<Node, std::pair<int, int>> inOut;
-  fillInOut(&inOut);
+  fillInOut(&inOut, nodesToIgnore);
 
   int numberOfEdges{};
   // count all the edges
@@ -361,7 +393,7 @@ Graph::Path Graph::findEulerianPath() {
     numberOfEdges += elem.second.second;
   }
 
-  // how would there be a path, if there are no edges
+  // how could there be a path, if there are no edges
   if (!numberOfEdges) {
     return std::nullopt;
   }

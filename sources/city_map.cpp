@@ -203,7 +203,7 @@ void CityMap::closed() {
 }
 
 void CityMap::tour() {
-  Graph::Path tourPath {g.findEulerianPath()};
+  Graph::Path tourPath {g.findEulerianPath(closedNodes)};
 
   if (!tourPath.has_value()) {
     std::cout << "there is no available tour\n";
