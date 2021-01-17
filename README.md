@@ -149,6 +149,16 @@ sys 0.06
 mem 59956
 cpu 99%
 
+# N = 1000
+# using AdjacentTo = std::unordered_map<std::string_view, Distance>;
+# const & all the way
+
+real 10.82
+user 10.76
+sys 0.04
+mem 59972
+cpu 99%
+
 # N = 10000
 # using AdjacentTo = std::unordered_map<Node, Distance>;
 real 1553.97
@@ -166,20 +176,57 @@ sys 3.31
 mem 5494924
 cpu 99%
 
-```
-```
-max memory:
-N =  1 000: 59956 / 75552      = 0.79357
+# N = 10000
+# using AdjacentTo = std::unordered_map<std::string_view, Distance>;
+# const & all the way
 
-N = 10 000: 5494924 / 7058168  = 0.77852
+real 1016.55
+user 1013.67
+sys 2.16
+mem 5495180
+cpu 99%
+
+
+```
+```
+
+only string_view vs string:
+
+max memory:
+N =  1 000:   59956 / 75552     = 0.79357
+
+N = 10 000: 5494924 / 7058168   = 0.77852
 
 user time:
-N =  1 000:  13.76 / 14.87     = 0.92535
-N = 10 000: 1418.30 / 1548.10  = 0.91616
+N =  1 000:  13.76  / 14.87     = 0.92535
+N = 10 000: 1418.30 / 1548.10   = 0.91616
+
+
+string_view and arguments as references vs string and copies:
+
+max memory:
+N =  1 000:  59972  / 75552     = 0.79378
+N = 10 000: 5495180 / 7058168   = 0.77856
+
+user time:
+N =  1 000:  10.76  / 14.87     = 0.72360
+N = 10 000: 1013.67 / 1548.10   = 0.65478
+
 
 ```
+#### string vs string_view
 I got about `20% less max memory` used to store the whole data,
 and about  `8% of time improvement` to read the whole data. It's something.
+
+#### string and copies vs string_view and const references
+on reading 100M nodes in memory the performance improvement is
+about `22% less memory` and `35% faster`.
+
+Copies are so slow...
+```
+“Immature poets imitate; mature poets steal;"
+    - T.S Eliot
+```
 
 also I ran g++'s profiler gprof just for fun:
 -https://ftp.gnu.org/old-gnu/Manuals/gprof-2.9.1/html_mono/gprof.html#SEC4
