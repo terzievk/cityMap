@@ -87,8 +87,101 @@ I guess the compiler does a pretty good job at optimising the memory anyway...~~
 ![xkcd](https://imgs.xkcd.com/comics/optimization.png)
 
 ### make AdjacentTo nodes string_view to save some copies
-see previous
+see one above
 
+### does std::string_view improve something?
+I was wondering if string_view does really improve something so, I used time(1)
+- https://www.gnu.org/software/time/
+
+
+` /usr/bin/time -f "real %e\nuser %U\nsys %S\nmem %M\ncpu %P" ./f `
+
+```
+       %e     (Not in tcsh(1).)  Elapsed real time (in seconds).
+       %U     Total number of CPU-seconds that the process spent in user
+              mode.
+       %S     Total number of CPU-seconds that the process spent in
+              kernel mode.
+       Memory
+       %M     Maximum resident set size of the process during its
+              lifetime, in Kbytes.
+              
+       %P     Percentage of the CPU that this job got, computed as (%U + %S) / %E.
+
+```
+- https://man7.org/linux/man-pages/man1/time.1.html
+
+I did four test of just creating a CityMap object and reading all elements from a file.
+Tried with two different test files, generated like this:
+```
+  int N {1000};
+
+  for (int i{1}; i < N; ++i) {
+    std::cout << i << ' ';
+    for (int j{1}; j < N; ++j) {
+      if (j != i) {
+        std::cout << j << ' ' << j << ' ';
+      }
+    }
+    std::cout << std::endl;
+  }
+
+```
+First was with N = 1000 and second N = 10000
+
+
+And here are the results (time in s, mem in KB):
+```
+# N = 1000
+# using AdjacentTo = std::unordered_map<Node, Distance>;
+real 14.97
+user 14.87
+sys 0.08
+mem 75552
+cpu 99%
+
+# N = 1000
+# using AdjacentTo = std::unordered_map<std::string_view, Distance>;
+real 13.84
+user 13.76
+sys 0.06
+mem 59956
+cpu 99%
+
+# N = 10000
+# using AdjacentTo = std::unordered_map<Node, Distance>;
+real 1553.97
+user 1548.10
+sys 3.98
+mem 7058168
+cpu 99%
+
+# N = 10000
+# using AdjacentTo = std::unordered_map<std::string_view, Distance>;
+
+real 1423.62
+user 1418.30
+sys 3.31
+mem 5494924
+cpu 99%
+
+```
+```
+max memory:
+N =  1 000: 59956 / 75552      = 0.79357
+
+N = 10 000: 5494924 / 7058168  = 0.77852
+
+user time:
+N =  1 000:  13.76 / 14.87     = 0.92535
+N = 10 000: 1418.30 / 1548.10  = 0.91616
+
+```
+I got about `20% less max memory` used to store the whole data,
+and about  `8% of time improvement` to read the whole data. It's something.
+
+also I ran g++'s profiler gprof just for fun:
+-https://ftp.gnu.org/old-gnu/Manuals/gprof-2.9.1/html_mono/gprof.html#SEC4
 ### how to run
 - `make` runs creates the necessary object and dependencies files,
     compiles, then it runs the tests and runs the program itself

@@ -11,7 +11,7 @@ OBJ := $(SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 CPPFLAGS := $(addprefix -I,$(INC_DIRS))
 # generate dependencies makefiles,
 # which we read at the bottom with `include`
-CPPFLAGS := $(CPPFLAGS) -MMD -MP
+CPPFLAGS := $(CPPFLAGS) -MMD -MP  -pg
 
 CXXFLAGS := -Wall -Werror -std=c++20
 
@@ -32,8 +32,9 @@ clean:
 test: $(EXE)
 	@./$(EXE) -e
 
+## -gp for gprof profiler
 $(EXE): $(OBJ)
-	$(CXX) $^ -o $@
+	$(CXX) $^ -o  $@ -pg 
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	echo $(CPPFLAGS)

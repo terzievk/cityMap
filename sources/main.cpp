@@ -29,8 +29,8 @@ void helper2() {
 }
 
 void helper() {
-  CityMap city{};
-  city.startInteractiveMode();
+  CityMap city{"./graphs/g1"};
+  // city.startInteractiveMode();
 }
 
 
