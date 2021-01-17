@@ -34,7 +34,6 @@ class CityMap {
 
   // extra
   void print();
-
 };
 
 #endif  // INCLUDES_CITY_MAP_H_
