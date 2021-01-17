@@ -24,17 +24,16 @@ class Graph {
   std::unordered_map<Node, Pointer> nodes;
 
   void addNode(Node);
-
   bool hasAdjacentTo(Node);
 
   bool isEdge(Node from, Node to);
   int getDistance(Node from, Node to);
   void addEdge(Node from, Node to, Distance);
 
-
+  // k-th shortest path helper
   Path getIthNodes(Path path, int i);
 
-  // Hierholzer
+  // Hierholzer helpers
   void fillInOut(std::unordered_map<Node, std::pair<int, int>> *inOut);
   bool isEulerianPath(std::unordered_map<Node, std::pair<int, int>> *inOut);
   Node findStartingNode(std::unordered_map<Node, std::pair<int, int>> *inOut);
@@ -46,7 +45,6 @@ class Graph {
 
  public:
   explicit Graph(std::string filename);
-
   Graph(const Graph&) = delete;
   Graph& operator=(const Graph&) = delete;
 
@@ -56,15 +54,14 @@ class Graph {
   AdjacentTo* getAdjacentToPointer(Node);
 
   std::list<std::pair<Node, Node>> getDeadEnds();
-  Path findEulerianPath();
   bool isPath(Node from, std::optional<Node> to = std::optional<Node>());
-
+  // Hierholzer
+  Path findEulerianPath();
   // Dijkstra
   Path findShortestPath(Node from, Node to, std::unordered_set<Node>
                         nodesToIgnore = std::unordered_set<Node>(),
                         std::set<std::pair<Node, Node>> edgesToIgnore
                         = std::set<std::pair<Node, Node>> ());
-
   // Yen
   std::vector<Path> kTHShortestPath(Node from, Node to, int K,
                                     std::unordered_set<Node> nodesToIgnore
