@@ -31,12 +31,12 @@ class CityMap {
 
   // required
   void location();
-  void change(Graph::Node);
+  void change(const Graph::Node&);
   void neighbours();
   // the command is move, but move is a keyword
-  void moveTo(Graph::Node);
-  void close(Graph::Node);
-  void open(Graph::Node);
+  void moveTo(const Graph::Node&);
+  void close(const Graph::Node&);
+  void open(const Graph::Node&);
   void closed();
   void tour();
 

@@ -89,7 +89,6 @@ void CityMap::startInteractiveMode() {
       closed();
 
     } else if (first == "tour") {
-
       if (readSecond) {
         std::cout << "Tour doesn't take arguments. Try again.\n";
         continue;
@@ -127,7 +126,7 @@ void CityMap::location() {
   }
 }
 
-void CityMap::change(Graph::Node n) {
+void CityMap::change(const Graph::Node &n) {
   if (!g.isNode(n)) {
     std::cout << n << " is not a crossroad.";
   } else {
@@ -154,7 +153,7 @@ void CityMap::neighbours() {
 }
 
 
-void CityMap::moveTo(Graph::Node to) {
+void CityMap::moveTo(const Graph::Node &to) {
   if (!currentLocation.has_value()) {
     std::cout << "Before moving, set the current location with `change`.";
     return;
@@ -183,7 +182,7 @@ void CityMap::moveTo(Graph::Node to) {
 }
 
 // required
-void CityMap::close(Graph::Node n) {
+void CityMap::close(const Graph::Node &n) {
   if (g.isNode(n)) {
     closedNodes.insert(n);
     // print all closed after closin
@@ -195,7 +194,7 @@ void CityMap::close(Graph::Node n) {
   }
 }
 
-void CityMap::open(Graph::Node n) {
+void CityMap::open(const Graph::Node &n) {
   if (g.isNode(n)) {
     closedNodes.erase(n);
     // print all closed after opening

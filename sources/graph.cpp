@@ -23,7 +23,7 @@
 TEST_SUITE_BEGIN("graph");
 
 
-bool isDigit(std::string s) {
+bool isDigit(const std::string &s) {
   for (const auto &c : s) {
     if (!isdigit(c)) {
       return false;
@@ -34,7 +34,7 @@ bool isDigit(std::string s) {
 }
 
 
-Graph::Graph(std::string filename) {
+Graph::Graph(const std::string &filename) {
   std::ifstream fin(filename);
   if (!fin) {
     throw std::runtime_error("Couldn't read file: " + filename +
@@ -98,22 +98,22 @@ void Graph::print() {
   }
 }
 
-bool Graph::isNode(Node n) {
+bool Graph::isNode(const Node &n) {
   return nodes.contains(n);
 }
 
-void Graph::addNode(Node n) {
+void Graph::addNode(const Node &n) {
   // insert inserts if there is no such element
   nodes.insert({n, std::make_unique<AdjacentTo>()});
   assert(nodes[n] && "new should \"always\" work");
 }
 
-bool Graph::hasAdjacentTo(Node n) {
+bool Graph::hasAdjacentTo(const Node &n) {
   assert(isNode(n) && "should be a node");
   return !getAdjacentToPointer(n)->empty();
 }
 
-Graph::AdjacentTo* Graph::getAdjacentToPointer(Node n) {
+Graph::AdjacentTo* Graph::getAdjacentToPointer(const Node &n) {
   assert(isNode(n) && "should be a node");
   const Pointer& temp = nodes.find(n)->second;
   assert(temp && "unique pointer has no value");
@@ -122,18 +122,18 @@ Graph::AdjacentTo* Graph::getAdjacentToPointer(Node n) {
   return temp.get();
 }
 
-bool Graph::isEdge(Node from, Node to) {
+bool Graph::isEdge(const Node &from, const Node &to) {
   return isNode(from) && isNode(to) && getAdjacentToPointer(from)->contains(to);
 }
 
-int Graph::getDistance(Node from, Node to) {
+int Graph::getDistance(const Node &from, const Node &to) {
   assert(isNode(from) && "should be a node");
   assert(isNode(to) && "should be a node");
 
   return getAdjacentToPointer(from)->find(to)->second;
 }
 
-void Graph::addEdge(Node from, Node to, Distance distance) {
+void Graph::addEdge(const Node &from, const Node &to, Distance distance) {
   assert(isNode(from) && "should be a node");
 
   // will do nothing if such node exists
@@ -143,7 +143,7 @@ void Graph::addEdge(Node from, Node to, Distance distance) {
   getAdjacentToPointer(from)->insert({nodes.find(to)->first, distance});
 }
 
-bool Graph::isPath(Node from, std::optional<Node> to) {
+bool Graph::isPath(const Node &from, const std::optional<Node> &to) {
   // BFS
   std::queue<Node> q;
   q.push(from);
@@ -261,7 +261,7 @@ TEST_CASE("g1") {
 }
 
 void Graph::fillInOut(std::unordered_map<Node, std::pair<int, int>> *inOut,
-                      std::unordered_set<Node> nodesToIgnore) {
+                      const std::unordered_set<Node> &nodesToIgnore) {
   // add each node to inOut and count the out nodes;
 
   // fill inOut with all the nodes
@@ -365,7 +365,7 @@ Graph::Node Graph::findStartingNode(std::unordered_map<Node,
   return "";
 }
 
-void Graph::hierholzerDFSHelper(Node from, std::list<Node> *result,
+void Graph::hierholzerDFSHelper(const Node &from, std::list<Node> *result,
                                 std::set<std::pair<Node, Node>> *visited) {
   for (const auto &adjPair : *getAdjacentToPointer(from)) {
     Node to {adjPair.first};
@@ -381,7 +381,8 @@ void Graph::hierholzerDFSHelper(Node from, std::list<Node> *result,
 // Graph::Path Graph::findEulerianPath(std::unordered_set<Node> nodesToIgnore =
 //                                     std::unordered_set<Node>()) {
 
-Graph::Path Graph::findEulerianPath(std::unordered_set<Node> nodesToIgnore) {
+Graph::Path Graph::findEulerianPath(const std::unordered_set<Node>
+                                    &nodesToIgnore) {
   // for each node count the in and out edges
   std::unordered_map<Node, std::pair<int, int>> inOut;
   fillInOut(&inOut, nodesToIgnore);
@@ -484,9 +485,9 @@ TEST_CASE("g5: cycle with two loops") {
 }
 
 Graph::Path
-Graph::findShortestPath(Node from, Node to, std::unordered_set<Node>
-                        nodesToIgnore, std::set<std::pair<Node, Node>>
-                        edgesToIgnore) {
+Graph::findShortestPath(const Node &from, const Node &to, const
+                        std::unordered_set<Node> &nodesToIgnore,
+                        const std::set<std::pair<Node, Node>> &edgesToIgnore) {
   if (!isNode(from) || !isNode(to)) {
     return std::nullopt;
   }
@@ -556,7 +557,7 @@ Graph::findShortestPath(Node from, Node to, std::unordered_set<Node>
   return std::make_pair(d[to], result);
 }
 
-void printPath(Graph::Path path) {
+void printPath(const Graph::Path &path) {
   std::cout << "\n\n";
   if (path.has_value()) {
     std::cout << "distance: " << path->first;
@@ -572,7 +573,7 @@ void printPath(Graph::Path path) {
 }
 
 // returns the i-th node
-Graph::Node getIthNode(Graph::Path path, int i) {
+Graph::Node getIthNode(const Graph::Path &path, int i) {
   // maybe too slow?
   auto it {path->second.begin()};
   std::advance(it, i);
@@ -586,7 +587,7 @@ TEST_CASE("get i-th node") {
 }
 
 // returns the first i nodes
-Graph::Path Graph::getIthNodes(Path path, int i) {
+Graph::Path Graph::getIthNodes(const Path &path, int i) {
   std::list<Graph::Node> result;
   auto it {path->second.begin()};
   for (int j{}; j < i; ++j) {
@@ -611,8 +612,8 @@ Graph::Path Graph::getIthNodes(Path path, int i) {
 }
 
 std::vector<Graph::Path>
-Graph::kTHShortestPath(Node from, Node to, int K,
-                       std::unordered_set<Node> nodesToIgnore) {
+Graph::kTHShortestPath(const Node &from, const Node &to, int K,
+                       const std::unordered_set<Node> &nodesToIgnore) {
   std::vector<Path> A(K);
 
   Path result {findShortestPath(from, to)};
