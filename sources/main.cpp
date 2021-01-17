@@ -30,6 +30,7 @@ void helper2() {
 
 void helper() {
   CityMap city{};
+  city.startInteractiveMode();
 }
 
 
