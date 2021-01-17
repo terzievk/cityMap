@@ -243,6 +243,18 @@ but maybe to others too
 Guess the command, the user intended to type with levenshtein distance. Currently the
 levenshtein distance function is reccursive and is inpractical for long words...
 
+Update with direct implementation of the pseudocode from wikipedia to improve speed
+by a lot - it's now practical for long words
+- https://www.wikiwand.com/en/Levenshtein_distance#/Iterative_with_two_matrix_rows
+
+### pseudocode is so annoying...
+In this example `for i from 0 to n` includes i == n
+- https://www.wikiwand.com/en/Levenshtein_distance#/Iterative_with_two_matrix_rows
+
+but this one ` for k from 1 to K` doesn't include k == K
+- https://www.wikiwand.com/en/Yen%27s_algorithm
+
+
 ### Dijkstra?
 - https://cp-algorithms.com/graph/dijkstra_sparse.html
 

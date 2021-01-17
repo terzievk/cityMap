@@ -108,7 +108,7 @@ void CityMap::startInteractiveMode() {
 
     } else {
       std::cout << "Command not found. Try again.\n";
-      std::string closest {commands[findNearestCommandIndex(first)]};
+      std::string closest {findNearestCommand(first)};
       std::cout << "Did you mean " << closest << "?\n";
     }
 
@@ -186,7 +186,9 @@ void CityMap::moveTo(Graph::Node to) {
 void CityMap::close(Graph::Node n) {
   if (g.isNode(n)) {
     closedNodes.insert(n);
-    // print all closed after closing
+    // print all closed after closin
+    //
+    // g
     closed();
   } else {
     std::cout << n << "can't be closed, because it's not a crossroad.\n";
@@ -232,6 +234,52 @@ void CityMap::print() {
 }
 
 
+int CityMap::levenshtein(const std::string &s, const std::string &t) {
+  // return levenshteinHelper(s1, 0, static_cast<int>(s1.size()),
+  //                          s2, 0, static_cast<int>(s2.size()));
+  int m {static_cast<int>(s.size())};
+  int n {static_cast<int>(t.size())};
+
+  std::vector<int> v0(n+1);
+  std::vector<int> v1(n+1);
+
+  for (int i{}; i <= n; ++i) {
+    v0[i] = i;
+  }
+
+  for (int i{}; i < m; ++i) {
+    v1[0] = i + 1;
+
+    for (int j{}; j < n; ++j) {
+      int deletionCost {v0[j + 1] + 1};
+      int insertionCost {v1[j] + 1};
+
+      int substitutionCost{v0[j] + !(s[i] == t[j])};
+
+      v1[j + 1] = std::min(std::min(deletionCost, insertionCost),
+                           substitutionCost);
+    }
+    std::swap(v0, v1);
+  }
+  return v0[n];
+}
+
+std::string CityMap::findNearestCommand(const std::string &s) {
+  int minDistance {levenshtein(CityMap::commands[0], s)};
+  int minIndex {0};
+  int size {static_cast<int>(sizeof(commands)/sizeof(commands[0]))};
+
+  for (int i{1}; i < size; ++i) {
+    int lev{levenshtein(CityMap::commands[i], s)};
+
+    if (lev < minDistance) {
+      minDistance = lev;
+      minIndex = i;
+    }
+  }
+  return commands[minIndex];
+}
+
 #include "../doctest/doctest.h"
 
 
@@ -247,6 +295,21 @@ TEST_CASE("musaka") {
                        "Couldn't read file: musaka. Make sure such file exists."
                        , std::runtime_error);
 }
+
+TEST_CASE("findNearestCommand") {
+  CityMap city("./graphs/g1");
+  SUBCASE("niegfaaafds") {
+    CHECK_EQ("neighbours", city.findNearestCommand("niegfaaafds"));
+  }
+  SUBCASE("open") {
+    CHECK_EQ("open", city.findNearestCommand("open"));
+  }
+
+  SUBCASE("prin") {
+    CHECK_EQ("print", city.findNearestCommand("prin"));
+  }
+}
+
 
 
 // https://github.com/onqtam/doctest/issues/427
