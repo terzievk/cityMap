@@ -349,7 +349,8 @@ void Graph::hierholzerDFSHelper(Node from, std::list<Node> *result,
   result->push_front(from);
 }
 
-std::optional<std::list<Graph::Node>> Graph::findEulerianPath() {
+// using Path = std::optional<std::pair<Distance, std::list<Node>>>;
+Graph::Path Graph::findEulerianPath() {
   // for each node count the in and out edges
   std::unordered_map<Node, std::pair<int, int>> inOut;
   fillInOut(&inOut);
@@ -377,7 +378,16 @@ std::optional<std::list<Graph::Node>> Graph::findEulerianPath() {
 
   // if we have disconnected components, there should be left unvisited nodes
   if (static_cast<int>(visited.size()) == numberOfEdges) {
-    return result;
+    //    return result;
+    Distance d{};
+    for (auto it{result.begin()}; it != result.end(); ++it) {
+      auto nextIt {it};
+      ++nextIt;
+      if (nextIt != result.end()) {
+        d += getDistance(*it, *nextIt);
+      }
+    }
+    return std::make_pair(d, result);
   }
 
   return std::nullopt;
@@ -390,7 +400,7 @@ TEST_CASE("g1") {
   // g.print();
 
   SUBCASE("Eulerian path") {
-    std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
+    Graph::Path result{g.findEulerianPath()};
     CHECK(!result.has_value());
   }
 }
@@ -399,10 +409,11 @@ TEST_CASE("g2: linked list") {
   Graph g("./graphs/g2");
 
   SUBCASE("Eulerian path") {
-    std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
+    Graph::Path result{g.findEulerianPath()};
     CHECK(result.has_value());
 
-    CHECK_EQ(*result, std::list<Graph::Node> {"a", "b", "c", "d", "e"});
+    CHECK_EQ(result->first, 35);
+    CHECK_EQ(result->second, std::list<Graph::Node> {"a", "b", "c", "d", "e"});
   }
 }
 
@@ -410,11 +421,12 @@ TEST_CASE("g3: eulerian path with a few loops") {
   Graph g("./graphs/g3");
 
   SUBCASE("Eulerian path") {
-    std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
+    Graph::Path result{g.findEulerianPath()};
     CHECK(result.has_value());
 
-    CHECK_EQ(*result, std::list<Graph::Node> {"f", "g", "h", "i", "f", "d",
-        "a", "b", "c", "d", "e"});
+    CHECK_EQ(result->first, 10);
+    CHECK_EQ(result->second, std::list<Graph::Node> {"f", "g", "h", "i", "f",
+        "d", "a", "b", "c", "d", "e"});
   }
 }
 
@@ -422,7 +434,7 @@ TEST_CASE("g4: no edges") {
   Graph g("./graphs/g4");
 
   SUBCASE("Eulerian path") {
-    std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
+    Graph::Path result{g.findEulerianPath()};
     CHECK(!result.has_value());
   }
 }
@@ -431,17 +443,19 @@ TEST_CASE("g5: cycle with two loops") {
   Graph g("./graphs/g5");
 
   SUBCASE("Eulerian path") {
-    std::optional<std::list<Graph::Node>> result{g.findEulerianPath()};
+    Graph::Path result{g.findEulerianPath()};
     CHECK(result.has_value());
 
-    CHECK_EQ(*result, std::list<Graph::Node> {"a", "e", "f", "g", "a", "b", "c",
-        "d", "a"});
+    CHECK_EQ(result->first, 8);
+    CHECK_EQ(result->second, std::list<Graph::Node> {"a", "e", "f", "g", "a",
+        "b", "c", "d", "a"});
   }
 }
 
 Graph::Path
-Graph::findShortestPath(Node from, Node to, std::unordered_set<Node> nodesToIgnore,
-                        std::set<std::pair<Node, Node>> edgesToIgnore) {
+Graph::findShortestPath(Node from, Node to, std::unordered_set<Node>
+                        nodesToIgnore, std::set<std::pair<Node, Node>>
+                        edgesToIgnore) {
   if (!isNode(from) || !isNode(to)) {
     return std::nullopt;
   }

@@ -56,7 +56,7 @@ class Graph {
   AdjacentTo* getAdjacentToPointer(Node);
 
   std::list<std::pair<Node, Node>> getDeadEnds();
-  std::optional<std::list<Node>> findEulerianPath();
+  Path findEulerianPath();
   bool isPath(Node from, std::optional<Node> to = std::optional<Node>());
 
   // Dijkstra
