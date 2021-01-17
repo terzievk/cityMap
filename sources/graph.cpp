@@ -87,7 +87,6 @@ Graph::Graph(std::string filename) {
   }
 
   fin.close();
-
 }
 
 void Graph::print() {
@@ -441,7 +440,7 @@ TEST_CASE("g5: cycle with two loops") {
 }
 
 Graph::Path
-Graph::findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore,
+Graph::findShortestPath(Node from, Node to, std::unordered_set<Node> nodesToIgnore,
                         std::set<std::pair<Node, Node>> edgesToIgnore) {
   if (!isNode(from) || !isNode(to)) {
     return std::nullopt;
@@ -568,7 +567,7 @@ Graph::Path Graph::getIthNodes(Path path, int i) {
 
 std::vector<Graph::Path>
 Graph::kTHShortestPath(Node from, Node to, int K,
-                       std::set<Node> nodesToIgnore) {
+                       std::unordered_set<Node> nodesToIgnore) {
   std::vector<Path> A(K);
 
   Path result {findShortestPath(from, to)};
@@ -596,7 +595,7 @@ Graph::kTHShortestPath(Node from, Node to, int K,
         }
       }
 
-      std::set<Node> allNodesToIgnore{nodesToIgnore};
+      std::unordered_set<Node> allNodesToIgnore{nodesToIgnore};
       for (Node node : rootPath->second) {  // spur node is not in the rootPath
         allNodesToIgnore.insert(node);
       }
@@ -812,7 +811,7 @@ class GraphPrivateMethodsTests {
     }
 
     SUBCASE("no path 3") {
-      std::set<std::string> nodesToIgnore{"c"};
+      std::unordered_set<std::string> nodesToIgnore{"c"};
       std::set<std::pair<std::string, std::string>> edgesToIgnore{{"f", "a"}};
       result = g.findShortestPath("b", "a", nodesToIgnore, edgesToIgnore);
       CHECK(!result.has_value());

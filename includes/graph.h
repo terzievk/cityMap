@@ -3,6 +3,7 @@
 #define INCLUDES_GRAPH_H_
 
 #include <set>
+#include <unordered_set>
 #include <list>
 #include <vector>
 #include <unordered_map>
@@ -25,16 +26,11 @@ class Graph {
   void addNode(Node);
 
   bool hasAdjacentTo(Node);
-  AdjacentTo* getAdjacentToPointer(Node);
 
   bool isEdge(Node from, Node to);
   int getDistance(Node from, Node to);
   void addEdge(Node from, Node to, Distance);
 
-  // Dijkstra
-  Path findShortestPath(Node from, Node to, std::set<Node> nodesToIgnore
-                        = std::set<Node>(), std::set<std::pair<Node, Node>>
-                        edgesToIgnore = std::set<std::pair<Node, Node>> ());
 
   Path getIthNodes(Path path, int i);
 
@@ -57,13 +53,22 @@ class Graph {
   void print();
 
   bool isNode(Node);
+  AdjacentTo* getAdjacentToPointer(Node);
+
   std::list<std::pair<Node, Node>> getDeadEnds();
   std::optional<std::list<Node>> findEulerianPath();
   bool isPath(Node from, std::optional<Node> to = std::optional<Node>());
 
+  // Dijkstra
+  Path findShortestPath(Node from, Node to, std::unordered_set<Node>
+                        nodesToIgnore = std::unordered_set<Node>(),
+                        std::set<std::pair<Node, Node>> edgesToIgnore
+                        = std::set<std::pair<Node, Node>> ());
+
   // Yen
-  std::vector<Path> kTHShortestPath(Node from, Node to, int K, std::set<Node>
-                                    nodesToIgnore = std::set<Node>());
+  std::vector<Path> kTHShortestPath(Node from, Node to, int K,
+                                    std::unordered_set<Node> nodesToIgnore
+                                    = std::unordered_set<Node>());
 };
 
 #endif  // INCLUDES_GRAPH_H_
