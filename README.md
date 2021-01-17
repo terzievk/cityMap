@@ -1,5 +1,6 @@
 # cityMap
 SDP project, FMI
+### ![graphs](./6B614CD3-3725-42B3-AFAE-F588C7F9A6A2.jpeg)
 ### intro tl;dr: skip the intro
 As Benjamin Franklin famously wrote in 1789, in a letter to Jean-Baptiste Le Roy, 
 who, among other things, was one of the contributors, known as Encyclopédistes,
