@@ -232,11 +232,21 @@ void CityMap::print() {
 
 #include "../doctest/doctest.h"
 
+
+
 TEST_SUITE_BEGIN("city_map");
 TEST_CASE("") {
   SUBCASE("") {
   }
 }
+
+TEST_CASE("musaka") {
+  CHECK_THROWS_WITH_AS(CityMap city{"musaka"},
+                       "Couldn't read file: musaka. Make sure such file exists."
+                       , std::runtime_error);
+}
+
+
 // https://github.com/onqtam/doctest/issues/427
 class CityMapPrivateMethodsTests {
  public:

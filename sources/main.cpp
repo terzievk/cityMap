@@ -33,8 +33,14 @@ int main(int argc, char *argv[]) {
   // also doctest has no conflicting arguments with -i
   for (int i{1}; i < argc - 1; ++i) {
     if (strcmp(argv[i], "-i") == 0) {
-      CityMap city{argv[i+1]};
-      city.startInteractiveMode();
+      try {
+        CityMap city{argv[i+1]};
+        city.startInteractiveMode();
+      } catch (const std::exception &exception) {
+        std::cerr << "Can't open this city map: " << exception.what() << '\n';
+      } catch(...) {
+        std::cerr << "error. shouldn't be here. something's wrong. hide\n";
+      }
 
       break;
     }

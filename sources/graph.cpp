@@ -37,7 +37,6 @@ bool isDigit(std::string s) {
 Graph::Graph(std::string filename) {
   std::ifstream fin(filename);
   if (!fin) {
-    std::cout << "error\n";
     throw std::runtime_error("Couldn't read file: " + filename +
                              ". Make sure such file exists.");
   }
