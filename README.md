@@ -239,9 +239,9 @@ a few tests compare the returned list with prechecked lists of results,
 which sort of relies on the deterministic properties of the unordered_map iterator,
 but maybe to others too
 
-### Change Graph consturctor to take a ifstream instead of a filename
-Pass directly the opened ifstream to the Graph constructor to make checking if the file
-is opened easier.
+### Guess closest command with levenshtein distance
+Guess the command, the user intended to type with levenshtein distance. Currently the
+levenshtein distance function is reccursive and is inpractical for long words...
 
 ### Dijkstra?
 - https://cp-algorithms.com/graph/dijkstra_sparse.html

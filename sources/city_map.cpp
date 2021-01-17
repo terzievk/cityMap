@@ -108,6 +108,8 @@ void CityMap::startInteractiveMode() {
 
     } else {
       std::cout << "Command not found. Try again.\n";
+      std::string closest {commands[findNearestCommandIndex(first)]};
+      std::cout << "Did you mean " << closest << "?\n";
     }
 
     std::cout << std::endl;
