@@ -306,9 +306,12 @@ bool isPath(Node from, std::optional<Node> to = std::optional<Node>())
 ### 5. find Euler's cycle
 - Hierholzer's algorithm: 
 ```
-std::optional<std::list<std::string>> findEulerianPath();
+Path findEulerianPath(std::unordered_set<Node> nodesToIgnore =
+                      std::unordered_set<Node>());
+
+
 ```
-    - if we need a cycle, the first and last elements of the list, should be the same
+- if we need a cycle, the first and last elements of the list, should be the same
 
 ### 6. is Mother? (there is a path from it to all the rest)
 - same as 1. and 4. BFS:
