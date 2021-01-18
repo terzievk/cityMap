@@ -63,7 +63,7 @@ void helper2() {
 }
 
 void helper() {
-  CityMap city{"./graphs/g1"};
+  CityMap city{"./big-test"};
   // city.startInteractiveMode();
 }
 

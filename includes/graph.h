@@ -25,23 +25,25 @@ class Graph {
   std::unordered_map<Node, Pointer> nodes;
 
   void addNode(const Node&);
-  bool hasAdjacentTo(const Node&);
+  bool hasAdjacentTo(const Node&) const;
 
-  bool isEdge(const Node &from, const Node &to);
-  int getDistance(const Node &from, const Node &to);
+  bool isEdge(const Node &from, const Node &to) const;
+  int getDistance(const Node &from, const Node &to) const;
   void addEdge(const Node &from, const Node &to, Distance);
 
   // k-th shortest path helper
-  Path getIthNodes(const Path &path, int i);
+  Path getIthNodes(const Path &path, int i) const;
 
   // Hierholzer helpers
   void fillInOut(std::unordered_map<Node, std::pair<int, int>> *inOut,
-                 const std::unordered_set<Node> &nodesToIgnore);
+                 const std::unordered_set<Node> &nodesToIgnore) const;
 
-  bool isEulerianPath(std::unordered_map<Node, std::pair<int, int>> *inOut);
-  Node findStartingNode(std::unordered_map<Node, std::pair<int, int>> *inOut);
+  bool isEulerianPath(std::unordered_map<Node,
+                      std::pair<int, int>> *inOut) const;
+  Node findStartingNode(std::unordered_map<Node,
+                        std::pair<int, int>> *inOut) const;
   void hierholzerDFSHelper(const Node &from, std::list<Node> *result,
-                           std::set<std::pair<Node, Node>> *visited);
+                           std::set<std::pair<Node, Node>> *visited) const;
 
   Graph() {}  // used only in tests
   friend class GraphPrivateMethodsTests;
@@ -51,18 +53,18 @@ class Graph {
   Graph(const Graph&) = delete;
   Graph& operator=(const Graph&) = delete;
 
-  void print();
+  void print() const;
 
-  bool isNode(const Node&);
-  AdjacentTo* getAdjacentToPointer(const Node&);
+  bool isNode(const Node&) const;
+  AdjacentTo* getAdjacentToPointer(const Node&) const;
 
-  std::list<std::pair<Node, Node>> getDeadEnds();
+  std::list<std::pair<Node, Node>> getDeadEnds() const;
   bool isPath(const Node &from, const std::optional<Node> &to
-              = std::optional<Node>());
+              = std::optional<Node>()) const;
   // Hierholzer
   //  Path findEulerianPath();
   Path findEulerianPath(const std::unordered_set<Node> &nodesToIgnore =
-                        std::unordered_set<Node>());
+                        std::unordered_set<Node>()) const;
 
 
   // Dijkstra
@@ -70,12 +72,12 @@ class Graph {
                         const std::unordered_set<Node> &nodesToIgnore =
                         std::unordered_set<Node>(), const
                         std::set<std::pair<Node, Node>> &edgesToIgnore
-                        = std::set<std::pair<Node, Node>> ());
+                        = std::set<std::pair<Node, Node>> ()) const;
   // Yen
   std::vector<Path> kTHShortestPath(const Node &from, const Node &to, int K,
                                     const std::unordered_set<Node>
                                     &nodesToIgnore =
-                                    std::unordered_set<Node>());
+                                    std::unordered_set<Node>()) const;
 };
 
 #endif  // INCLUDES_GRAPH_H_

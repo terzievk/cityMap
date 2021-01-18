@@ -88,7 +88,7 @@ Graph::Graph(const std::string &filename) {
   fin.close();
 }
 
-void Graph::print() {
+void Graph::print() const {
   for (const auto &fromPair : nodes) {
     std::cout << "from: " << fromPair.first;
     for (const auto &toPair : *fromPair.second) {
@@ -98,7 +98,7 @@ void Graph::print() {
   }
 }
 
-bool Graph::isNode(const Node &n) {
+bool Graph::isNode(const Node &n) const {
   return nodes.contains(n);
 }
 
@@ -108,12 +108,12 @@ void Graph::addNode(const Node &n) {
   assert(nodes[n] && "new should \"always\" work");
 }
 
-bool Graph::hasAdjacentTo(const Node &n) {
+bool Graph::hasAdjacentTo(const Node &n) const {
   assert(isNode(n) && "should be a node");
   return !getAdjacentToPointer(n)->empty();
 }
 
-Graph::AdjacentTo* Graph::getAdjacentToPointer(const Node &n) {
+Graph::AdjacentTo* Graph::getAdjacentToPointer(const Node &n) const {
   assert(isNode(n) && "should be a node");
   const Pointer& temp = nodes.find(n)->second;
   assert(temp && "unique pointer has no value");
@@ -122,11 +122,11 @@ Graph::AdjacentTo* Graph::getAdjacentToPointer(const Node &n) {
   return temp.get();
 }
 
-bool Graph::isEdge(const Node &from, const Node &to) {
+bool Graph::isEdge(const Node &from, const Node &to) const {
   return isNode(from) && isNode(to) && getAdjacentToPointer(from)->contains(to);
 }
 
-int Graph::getDistance(const Node &from, const Node &to) {
+int Graph::getDistance(const Node &from, const Node &to) const {
   assert(isNode(from) && "should be a node");
   assert(isNode(to) && "should be a node");
 
@@ -143,7 +143,7 @@ void Graph::addEdge(const Node &from, const Node &to, Distance distance) {
   getAdjacentToPointer(from)->insert({nodes.find(to)->first, distance});
 }
 
-bool Graph::isPath(const Node &from, const std::optional<Node> &to) {
+bool Graph::isPath(const Node &from, const std::optional<Node> &to) const {
   // BFS
   std::queue<Node> q;
   q.push(from);
@@ -216,10 +216,10 @@ TEST_CASE("g1") {
   }
 }
 
-std::list<std::pair<Graph::Node, Graph::Node>> Graph::getDeadEnds() {
+std::list<std::pair<Graph::Node, Graph::Node>> Graph::getDeadEnds() const {
   std::unordered_set<Node> leafs;
   for (const auto &nodePair : nodes) {
-    Node current{nodePair.first};
+    const Node &current{nodePair.first};
     if (!hasAdjacentTo(current)) {
       leafs.insert(current);
     }
@@ -228,7 +228,7 @@ std::list<std::pair<Graph::Node, Graph::Node>> Graph::getDeadEnds() {
   std::list<std::pair<Node, Node>> result;
 
   for (const auto &nodePair : nodes) {
-    Node from{nodePair.first};
+    const Node &from{nodePair.first};
     for (const auto &adjPair : *nodePair.second) {
       Node to{adjPair.first};
       if (leafs.contains(to)) {
@@ -261,12 +261,13 @@ TEST_CASE("g1") {
 }
 
 void Graph::fillInOut(std::unordered_map<Node, std::pair<int, int>> *inOut,
-                      const std::unordered_set<Node> &nodesToIgnore) {
+                      const std::unordered_set<Node> &nodesToIgnore) const {
   // add each node to inOut and count the out nodes;
 
   // fill inOut with all the nodes
   for (const auto &nodePair : nodes) {
-    Node from {nodePair.first};
+    // using maybe??
+    const Node &from {nodePair.first};
 
     if (!nodesToIgnore.contains(from)) {
       inOut->insert({from, {0, 0}});
@@ -274,7 +275,7 @@ void Graph::fillInOut(std::unordered_map<Node, std::pair<int, int>> *inOut,
   }
 
   for (const auto &inOutNode : *inOut) {
-    Node from {inOutNode.first};
+    const Node &from {inOutNode.first};
     AdjacentTo *adjTo {getAdjacentToPointer(from)};
 
     for (const auto &nodeDistancePair : *adjTo) {
@@ -305,7 +306,7 @@ void Graph::fillInOut(std::unordered_map<Node, std::pair<int, int>> *inOut,
 }
 
 bool Graph::isEulerianPath(std::unordered_map<Node,
-                           std::pair<int, int>> *inOut) {
+                           std::pair<int, int>> *inOut) const {
   int numberOfStartNodes{};
   int numberOfEndNodes{};
 
@@ -342,7 +343,7 @@ bool Graph::isEulerianPath(std::unordered_map<Node,
 }
 
 Graph::Node Graph::findStartingNode(std::unordered_map<Node,
-                                    std::pair<int, int>> *inOut) {
+                                    std::pair<int, int>> *inOut) const {
   for (const auto &each : *inOut) {
     int in{each.second.first};
     int out{each.second.second};
@@ -365,9 +366,10 @@ Graph::Node Graph::findStartingNode(std::unordered_map<Node,
   return "";
 }
 
-void Graph::hierholzerDFSHelper(const Node &from, std::list<Node> *result,
-                                std::set<std::pair<Node, Node>> *visited) {
-  for (const auto &adjPair : *getAdjacentToPointer(from)) {
+void
+Graph::hierholzerDFSHelper(const Node &from, std::list<Node> *result,
+                           std::set<std::pair<Node, Node>> *visited) const {
+  for (const auto &adjPair : *getAdjacentToPointer(from))  {
     Node to {adjPair.first};
     if (!visited->contains({from, to})) {
       visited->insert({from, to});
@@ -382,7 +384,7 @@ void Graph::hierholzerDFSHelper(const Node &from, std::list<Node> *result,
 //                                     std::unordered_set<Node>()) {
 
 Graph::Path Graph::findEulerianPath(const std::unordered_set<Node>
-                                    &nodesToIgnore) {
+                                    &nodesToIgnore) const {
   // for each node count the in and out edges
   std::unordered_map<Node, std::pair<int, int>> inOut;
   fillInOut(&inOut, nodesToIgnore);
@@ -484,10 +486,10 @@ TEST_CASE("g5: cycle with two loops") {
   }
 }
 
-Graph::Path
-Graph::findShortestPath(const Node &from, const Node &to, const
-                        std::unordered_set<Node> &nodesToIgnore,
-                        const std::set<std::pair<Node, Node>> &edgesToIgnore) {
+Graph::Path Graph::findShortestPath(const Node &from, const Node &to, const
+                                    std::unordered_set<Node> &nodesToIgnore,
+                                    const std::set<std::pair<Node, Node>>
+                                    &edgesToIgnore) const {
   if (!isNode(from) || !isNode(to)) {
     return std::nullopt;
   }
@@ -587,7 +589,7 @@ TEST_CASE("get i-th node") {
 }
 
 // returns the first i nodes
-Graph::Path Graph::getIthNodes(const Path &path, int i) {
+Graph::Path Graph::getIthNodes(const Path &path, int i) const {
   std::list<Graph::Node> result;
   auto it {path->second.begin()};
   for (int j{}; j < i; ++j) {
@@ -613,7 +615,7 @@ Graph::Path Graph::getIthNodes(const Path &path, int i) {
 
 std::vector<Graph::Path>
 Graph::kTHShortestPath(const Node &from, const Node &to, int K,
-                       const std::unordered_set<Node> &nodesToIgnore) {
+                       const std::unordered_set<Node> &nodesToIgnore) const {
   std::vector<Path> A(K);
 
   Path result {findShortestPath(from, to)};

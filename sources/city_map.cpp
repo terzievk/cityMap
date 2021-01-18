@@ -116,7 +116,7 @@ void CityMap::startInteractiveMode() {
 }
 
 
-void CityMap::location() {
+void CityMap::location() const {
   if (!currentLocation.has_value()) {
     std::cout << "The location has not yet been set."
               << " You can set it with `change`.";
@@ -139,7 +139,7 @@ void CityMap::change(const Graph::Node &n) {
   location();
 }
 
-void CityMap::neighbours() {
+void CityMap::neighbours() const {
   if (!currentLocation.has_value()) {
     std::cout << "The location has not yet been set."
               << " You can set it with `change`.";
@@ -205,7 +205,7 @@ void CityMap::open(const Graph::Node &n) {
   }
 }
 
-void CityMap::closed() {
+void CityMap::closed() const {
   std::cout << "Closed crossroads are:";
   for (const auto &c : closedNodes) {
     std::cout << c << ' ';
@@ -213,7 +213,7 @@ void CityMap::closed() {
   std::cout << std::endl;
 }
 
-void CityMap::tour() {
+void CityMap::tour() const {
   Graph::Path tourPath {g.findEulerianPath(closedNodes)};
 
   if (!tourPath.has_value()) {
@@ -228,12 +228,12 @@ void CityMap::tour() {
   std::cout << std::endl;
 }
 
-void CityMap::print() {
+void CityMap::print() const {
   g.print();
 }
 
 
-int CityMap::levenshtein(const std::string &s, const std::string &t) {
+int CityMap::levenshtein(const std::string &s, const std::string &t) const {
   // return levenshteinHelper(s1, 0, static_cast<int>(s1.size()),
   //                          s2, 0, static_cast<int>(s2.size()));
   int m {static_cast<int>(s.size())};
@@ -263,7 +263,7 @@ int CityMap::levenshtein(const std::string &s, const std::string &t) {
   return v0[n];
 }
 
-std::string CityMap::findNearestCommand(const std::string &s) {
+std::string CityMap::findNearestCommand(const std::string &s) const {
   int minDistance {levenshtein(CityMap::commands[0], s)};
   int minIndex {0};
   int size {static_cast<int>(sizeof(commands)/sizeof(commands[0]))};

@@ -20,9 +20,8 @@ class CityMap {
   std::unordered_set<Graph::Node> closedNodes;
 
   friend class CityMapPrivateMethodsTests;
-  std::string commands[9] = {"location",
-    "change", "neighbours", "move", "close", "open", "closed", "tour",
-    "print"};
+  const std::string commands[9] {"location", "change", "neighbours",
+        "move", "close", "open", "closed", "tour", "print"};
 
  public:
   // main always calls with argument
@@ -30,21 +29,21 @@ class CityMap {
   void startInteractiveMode();
 
   // required
-  void location();
+  void location() const;
   void change(const Graph::Node&);
-  void neighbours();
+  void neighbours() const;
   // the command is move, but move is a keyword
   void moveTo(const Graph::Node&);
   void close(const Graph::Node&);
   void open(const Graph::Node&);
-  void closed();
-  void tour();
+  void closed() const;
+  void tour() const;
 
   // extra
-  void print();
+  void print() const;
 
-  int levenshtein(const std::string &, const std::string &);
-  std::string findNearestCommand(const std::string &);
+  int levenshtein(const std::string &, const std::string &) const;
+  std::string findNearestCommand(const std::string &) const;
 };
 
 #endif  // INCLUDES_CITY_MAP_H_
