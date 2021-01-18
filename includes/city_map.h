@@ -18,10 +18,13 @@ class CityMap {
   Graph g;
   std::optional<Graph::Node> currentLocation;
   std::unordered_set<Graph::Node> closedNodes;
+  const std::string commands[11] {"location", "change", "neighbours",
+        "move", "close", "open", "closed", "tour", "print", "list",
+        "dead-ends"};
 
+  int levenshtein(const std::string &, const std::string &) const;
+  std::string findNearestCommand(const std::string &) const;
   friend class CityMapPrivateMethodsTests;
-  const std::string commands[9] {"location", "change", "neighbours",
-        "move", "close", "open", "closed", "tour", "print"};
 
  public:
   // main always calls with argument
@@ -41,9 +44,8 @@ class CityMap {
 
   // extra
   void print() const;
-
-  int levenshtein(const std::string &, const std::string &) const;
-  std::string findNearestCommand(const std::string &) const;
+  void listCommands() const;
+  void deadEnds() const;
 };
 
 #endif  // INCLUDES_CITY_MAP_H_

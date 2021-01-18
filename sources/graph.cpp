@@ -681,7 +681,14 @@ TEST_CASE("g6: nasty test") {
   Graph g("./graphs/g6");
 
   std::vector<Graph::Path> result;
-  result = g.kTHShortestPath("a", "f", 4);
+  std::unordered_set<Graph::Node> nodesToIgnore {""};
+  //  nodesToIgnore.insert("d");
+
+  result = g.kTHShortestPath("a", "f", 4, nodesToIgnore);
+
+  // for (auto p : result) {
+  //   printPath(p);
+  // }
 
   CHECK(result[0].has_value());
   CHECK(result[1].has_value());

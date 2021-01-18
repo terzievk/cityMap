@@ -37,7 +37,6 @@ class Graph {
   // Hierholzer helpers
   void fillInOut(std::unordered_map<Node, std::pair<int, int>> *inOut,
                  const std::unordered_set<Node> &nodesToIgnore) const;
-
   bool isEulerianPath(std::unordered_map<Node,
                       std::pair<int, int>> *inOut) const;
   Node findStartingNode(std::unordered_map<Node,
@@ -62,10 +61,8 @@ class Graph {
   bool isPath(const Node &from, const std::optional<Node> &to
               = std::optional<Node>()) const;
   // Hierholzer
-  //  Path findEulerianPath();
   Path findEulerianPath(const std::unordered_set<Node> &nodesToIgnore =
                         std::unordered_set<Node>()) const;
-
 
   // Dijkstra
   Path findShortestPath(const Node &from, const Node &to,
@@ -73,6 +70,7 @@ class Graph {
                         std::unordered_set<Node>(), const
                         std::set<std::pair<Node, Node>> &edgesToIgnore
                         = std::set<std::pair<Node, Node>> ()) const;
+
   // Yen
   std::vector<Path> kTHShortestPath(const Node &from, const Node &to, int K,
                                     const std::unordered_set<Node>

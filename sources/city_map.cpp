@@ -3,7 +3,11 @@
 #include <cassert>
 
 #include "../includes/city_map.h"
+#include "../doctest/doctest.h"
 
+
+
+TEST_SUITE_BEGIN("city_map");
 
 void CityMap::startInteractiveMode() {
   while (std::cin) {
@@ -28,7 +32,7 @@ void CityMap::startInteractiveMode() {
     bool readRest {ss >> second};
 
     if (readRest) {
-      std::cout << "Invalid command. Too many arguments. Try again.";
+      std::cout << "Invalid command. Too many arguments. Try again.\n";
       continue;
     }
 
@@ -103,15 +107,27 @@ void CityMap::startInteractiveMode() {
       }
 
       print();
+    }  else if (first == "list") {
+      if (readSecond) {
+        std::cout << "List doesn't take arguments. Try again.\n";
+        continue;
+      }
 
+      listCommands();
+
+    } else if (first == "dead-ends") {
+      if (readSecond) {
+        std::cout << "dead ends doesn't take arguments. Try again.\n";
+        continue;
+      }
+
+      deadEnds();
 
     } else {
-      std::cout << "Command not found. Try again.\n";
+      std::cout << first << " not found.";
       std::string closest {findNearestCommand(first)};
-      std::cout << "Did you mean " << closest << "?\n";
+      std::cout << " Did you mean " << closest << "? Try again.\n";
     }
-
-    std::cout << std::endl;
   }  // while
 }
 
@@ -119,22 +135,26 @@ void CityMap::startInteractiveMode() {
 void CityMap::location() const {
   if (!currentLocation.has_value()) {
     std::cout << "The location has not yet been set."
-              << " You can set it with `change`.";
-  } else {
-    std::cout << "currently you are at crossroad: "
-              << *currentLocation << ".";
+              << " You can set it with `change`.\n";
+    return;
   }
+
+  std::cout << "currently you are at crossroad: "
+            << *currentLocation << ".\n";
 }
 
 void CityMap::change(const Graph::Node &n) {
   if (!g.isNode(n)) {
-    std::cout << n << " is not a crossroad.";
-  } else {
-    if (!currentLocation.has_value()) {
-      currentLocation = std::make_optional<Graph::Node>();
-    }
-    *currentLocation = n;
+    std::cout << n << " is not a crossroad.\n";
+    return;
   }
+
+  // if setting for first time, create the node
+  if (!currentLocation.has_value()) {
+    currentLocation = std::make_optional<Graph::Node>();
+  }
+  *currentLocation = n;
+
   // after each change print current location
   location();
 }
@@ -142,37 +162,41 @@ void CityMap::change(const Graph::Node &n) {
 void CityMap::neighbours() const {
   if (!currentLocation.has_value()) {
     std::cout << "The location has not yet been set."
-              << " You can set it with `change`.";
-  } else {
-    std::cout << *currentLocation << "'s neighbours are: ";
-    for (const auto &neighbour : *g.getAdjacentToPointer(*currentLocation)) {
-      std::cout << neighbour.first << ' ';
-    }
-    std::cout << std::endl;
+              << " You can set it with `change`.\n";
+    return;
   }
+
+  std::cout << *currentLocation << "'s neighbours are: ";
+
+  for (const auto &neighbour : *g.getAdjacentToPointer(*currentLocation)) {
+    std::cout << neighbour.first << ' ';
+  }
+  std::cout << std::endl;
 }
 
 
 void CityMap::moveTo(const Graph::Node &to) {
   if (!currentLocation.has_value()) {
-    std::cout << "Before moving, set the current location with `change`.";
+    std::cout << "Before moving, set the current location with `change`.\n";
     return;
   }
 
   if (!g.isNode(to)) {
-    std::cout << "Can't move to " << to << ", because it's not a crossroad.";
+    std::cout << "Can't move to " << to << ", because it's not a crossroad.\n";
+    return;
   }
 
   Graph::Path path = g.findShortestPath(*currentLocation, to, closedNodes);
 
   if (!path.has_value()) {
     std::cout << "there is no path from " << *currentLocation << " to " << to
-              << ". Try again.";
+              << ". Try again.\n";
     return;
   }
 
   std::cout << "the path from " << *currentLocation << " to " << to
             << " has distance " << path->first << " and is:\n";
+
   for (const auto &node : path->second) {
     std::cout << node << ' ';
   }
@@ -183,30 +207,31 @@ void CityMap::moveTo(const Graph::Node &to) {
 
 // required
 void CityMap::close(const Graph::Node &n) {
-  if (g.isNode(n)) {
-    closedNodes.insert(n);
-    // print all closed after closin
-    //
-    // g
-    closed();
-  } else {
+  if (!g.isNode(n)) {
     std::cout << n << "can't be closed, because it's not a crossroad.\n";
+    return;
   }
+
+  closedNodes.insert(n);
+
+  // print all closed after closing
+  closed();
 }
 
 void CityMap::open(const Graph::Node &n) {
-  if (g.isNode(n)) {
-    closedNodes.erase(n);
-    // print all closed after opening
-    closed();
-
-  } else {
+  if (!g.isNode(n)) {
     std::cout << n << "can't be closed, because it's not a crossroad.\n";
+    return;
   }
+
+  closedNodes.erase(n);
+  // print all closed after opening
+  closed();
 }
 
 void CityMap::closed() const {
   std::cout << "Closed crossroads are:";
+
   for (const auto &c : closedNodes) {
     std::cout << c << ' ';
   }
@@ -222,6 +247,7 @@ void CityMap::tour() const {
   }
 
   std::cout << "here is a tour of distance: " << tourPath->first << ":\n";
+
   for (const Graph::Node &n : tourPath->second) {
     std::cout << n << ' ';
   }
@@ -279,13 +305,26 @@ std::string CityMap::findNearestCommand(const std::string &s) const {
   return commands[minIndex];
 }
 
-#include "../doctest/doctest.h"
+void CityMap::listCommands() const {
+  std::cout << "here are all commands:\n";
+  for (const std::string &each : commands) {
+    std::cout << each << ' ';
+  }
+  std::cout << std::endl;
+}
 
+void CityMap::deadEnds() const {
+  std::list<std::pair<Graph::Node, Graph::Node>> deadEnds {g.getDeadEnds()};
 
+  if (deadEnds.empty()) {
+    std::cout << "there are no dead ends\n";
+    return;
+  }
 
-TEST_SUITE_BEGIN("city_map");
-TEST_CASE("") {
-  SUBCASE("") {
+  std::cout << "the dead ends are the following:\n";
+
+  for (const auto &path : deadEnds) {
+    std::cout << "from: " << path.first << " to: " << path.second << std::endl;
   }
 }
 
@@ -295,29 +334,24 @@ TEST_CASE("musaka") {
                        , std::runtime_error);
 }
 
-TEST_CASE("findNearestCommand") {
-  CityMap city("./graphs/g1");
-  SUBCASE("niegfaaafds") {
-    CHECK_EQ("neighbours", city.findNearestCommand("niegfaaafds"));
-  }
-  SUBCASE("open") {
-    CHECK_EQ("open", city.findNearestCommand("open"));
-  }
-
-  SUBCASE("prin") {
-    CHECK_EQ("print", city.findNearestCommand("prin"));
-  }
-}
-
-
-
 // https://github.com/onqtam/doctest/issues/427
 class CityMapPrivateMethodsTests {
  public:
   CityMapPrivateMethodsTests() = delete;
 
  private:
-  TEST_CASE_CLASS("") {
+  TEST_CASE_CLASS("findNearestCommand") {
+    CityMap city("./graphs/g1");
+    SUBCASE("niegfaaafds") {
+      CHECK_EQ("neighbours", city.findNearestCommand("niegfaaafds"));
+    }
+    SUBCASE("open") {
+      CHECK_EQ("open", city.findNearestCommand("open"));
+    }
+
+    SUBCASE("prin") {
+      CHECK_EQ("print", city.findNearestCommand("prin"));
+    }
   }
 };
 
