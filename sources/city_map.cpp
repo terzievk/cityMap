@@ -345,25 +345,4 @@ TEST_CASE("musaka") {
                        , std::runtime_error);
 }
 
-// https://github.com/onqtam/doctest/issues/427
-class CityMapPrivateMethodsTests {
- public:
-  CityMapPrivateMethodsTests() = delete;
-
- private:
-  TEST_CASE_CLASS("findNearestCommand") {
-    CityMap city("./graphs/g1");
-    SUBCASE("niegfaaafds") {
-      CHECK_EQ("neighbours", city.findNearestCommand("niegfaaafds"));
-    }
-    SUBCASE("open") {
-      CHECK_EQ("open", city.findNearestCommand("open"));
-    }
-
-    SUBCASE("prin") {
-      CHECK_EQ("print", city.findNearestCommand("prin"));
-    }
-  }
-};
-
 TEST_SUITE_END();  // city_map

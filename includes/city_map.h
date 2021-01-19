@@ -25,7 +25,6 @@ class CityMap {
 
   int levenshtein(const std::string &, const std::string &) const;
   std::string findNearestCommand(const std::string &) const;
-  friend class CityMapPrivateMethodsTests;
 
  public:
   // main always calls with argument

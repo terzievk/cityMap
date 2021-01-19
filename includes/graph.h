@@ -64,7 +64,6 @@ class Graph {
 
 
   Graph() {}  // used only in tests
-  friend class GraphPrivateMethodsTests;
 
  public:
   explicit Graph(const std::string &filename);
