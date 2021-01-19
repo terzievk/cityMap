@@ -2,16 +2,31 @@
 #ifndef INCLUDES_GRAPH_H_
 #define INCLUDES_GRAPH_H_
 
+#include <fstream>
+#include <sstream>
+#include <iostream>
+
 #include <set>
-#include <unordered_set>
 #include <list>
+#include <queue>
 #include <vector>
+#include <unordered_set>
 #include <unordered_map>
 
 #include <string>
 #include <string_view>
+
 #include <memory>
 #include <utility>
+
+#include <iterator>
+#include <optional>
+#include <exception>
+#include <functional>
+
+#include <climits>
+#include <cassert>
+
 
 class Graph {
  public:
@@ -31,9 +46,6 @@ class Graph {
   int getDistance(const Node &from, const Node &to) const;
   void addEdge(const Node &from, const Node &to, Distance);
 
-  // k-th shortest path helper
-  Path getIthNodes(const Path &path, int i) const;
-
   // Hierholzer helpers
   void fillInOut(std::unordered_map<Node, std::pair<int, int>> *inOut,
                  const std::unordered_set<Node> &nodesToIgnore) const;
@@ -43,6 +55,13 @@ class Graph {
                         std::pair<int, int>> *inOut) const;
   void hierholzerDFSHelper(const Node &from, std::list<Node> *result,
                            std::set<std::pair<Node, Node>> *visited) const;
+
+  // other helpers
+  bool isDigit(const std::string &s);
+  void printPath(const Path &path);
+  Node getIthNode(const Path &path, int i) const;
+  Path getIthNodes(const Path &path, int i) const;
+
 
   Graph() {}  // used only in tests
   friend class GraphPrivateMethodsTests;

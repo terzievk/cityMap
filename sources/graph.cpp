@@ -1,106 +1,5 @@
 // Copyright
-#include <fstream>
-#include <sstream>
-#include <iostream>
-
-#include <list>
-#include <queue>
-#include <vector>
-#include <unordered_set>
-
-#include <utility>
-#include <iterator>
-#include <optional>
-#include <exception>
-#include <functional>
-
-#include <climits>
-#include <cassert>
-
 #include "../includes/graph.h"
-#include "../doctest/doctest.h"
-
-TEST_SUITE_BEGIN("graph");
-
-
-bool isDigit(const std::string &s) {
-  for (const auto &c : s) {
-    if (!isdigit(c)) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-
-Graph::Graph(const std::string &filename) {
-  std::ifstream fin(filename);
-  if (!fin) {
-    throw std::runtime_error("Couldn't read file: " + filename +
-                             ". Make sure such file exists.");
-  }
-
-  while (fin) {
-    std::string line;
-    std::getline(fin, line);
-
-    if (line.empty()) {
-      if (fin.eof()) {
-        break;
-      }
-
-      throw std::runtime_error("Wrong file format. There is an empty line " +
-                               static_cast<std::string>("before EOF"));
-    }
-
-    std::stringstream ss(line);
-    std::string from;
-
-    if (!(ss >> from)) {
-      throw std::runtime_error("Couldn't read from line: " + line);
-    }
-    addNode(from);
-
-    while (ss) {
-      std::string to;
-      // if there is nothing left to read
-      if (!(ss >> to)) {
-        break;
-      }
-
-      std::string dist;
-      if (!(ss >> dist)) {
-        // if we read a crossroad, we should read a distance
-        throw std::runtime_error("Couldn't read the distance between " +
-                                 from + " and " + to + " on line: " + line);
-      }
-
-      if (!isDigit(dist)) {
-        throw std::runtime_error("Invalid distance " + dist +" between " +
-                                 from + " and " + to + " on line: " + line);
-      }
-
-      addEdge(from, to, stoi(dist));
-    }
-  }
-
-  fin.close();
-}
-
-void Graph::print() const {
-  for (const auto &fromPair : nodes) {
-    std::cout << "from: " << fromPair.first;
-    for (const auto &toPair : *fromPair.second) {
-      std::cout << " to: " << toPair.first << ", " << toPair.second;
-    }
-    std::cout << std::endl;
-  }
-}
-
-bool Graph::isNode(const Node &n) const {
-  return nodes.contains(n);
-}
 
 void Graph::addNode(const Node &n) {
   // insert inserts if there is no such element
@@ -111,15 +10,6 @@ void Graph::addNode(const Node &n) {
 bool Graph::hasAdjacentTo(const Node &n) const {
   assert(isNode(n) && "should be a node");
   return !getAdjacentToPointer(n)->empty();
-}
-
-Graph::AdjacentTo* Graph::getAdjacentToPointer(const Node &n) const {
-  assert(isNode(n) && "should be a node");
-  const Pointer& temp = nodes.find(n)->second;
-  assert(temp && "unique pointer has no value");
-
-
-  return temp.get();
 }
 
 bool Graph::isEdge(const Node &from, const Node &to) const {
@@ -141,123 +31,6 @@ void Graph::addEdge(const Node &from, const Node &to, Distance distance) {
 
   // will do nothing if such adjacent node exists
   getAdjacentToPointer(from)->insert({nodes.find(to)->first, distance});
-}
-
-bool Graph::isPath(const Node &from, const std::optional<Node> &to) const {
-  // BFS
-  std::queue<Node> q;
-  q.push(from);
-  std::unordered_set<Node> visited;
-  visited.insert(from);
-
-  while (!q.empty()) {
-    Node current {q.front()};
-    q.pop();
-    visited.insert(current);
-    for (auto pairs : *getAdjacentToPointer(current)) {
-      Node adj{pairs.first};
-      if (to.has_value() && adj == *to) {
-        return true;
-      }
-      if (!visited.contains(adj)) {
-        q.push(adj);
-        visited.insert(adj);
-      }
-    }
-  }
-
-  // when isPair is called with two arguments
-  if (to.has_value()) {
-    return false;
-  }
-
-  // check if the visited and nodes sets are equal
-  if (visited.size() != nodes.size()) {
-    return false;
-  }
-
-  // since we are fillign visited from nodes' first values, this is
-  // redundant too,  but I will leave it for mathematical correctness
-  // plus it's one more check on whether each node in the graph is in
-  // nodes' first
-  for (auto v : visited) {
-    if (!nodes.contains(v)) {
-      return false;
-    }
-  }
-
-  // if they are not not equal
-  return true;
-}
-
-TEST_CASE("g1") {
-  Graph g("./graphs/g1");
-
-  //  std::cout << "here\n";
-  // g.print();
-
-  SUBCASE("isPath: path") {
-    CHECK(g.isPath("a", "b"));
-    CHECK(g.isPath("a", "i"));
-    CHECK(!g.isPath("d", "b"));
-    CHECK(!g.isPath("i", "a"));
-  }
-
-  SUBCASE("isPath: loop") {
-    CHECK(g.isPath("a", "a"));
-    CHECK(g.isPath("b", "b"));
-    CHECK(!g.isPath("g", "g"));
-  }
-
-  SUBCASE("isPath: mother") {
-    CHECK(g.isPath("a"));
-    CHECK(g.isPath("b"));
-    CHECK(!g.isPath("g"));
-  }
-}
-
-std::list<std::pair<Graph::Node, Graph::Node>> Graph::getDeadEnds() const {
-  std::unordered_set<Node> leafs;
-  for (const auto &nodePair : nodes) {
-    const Node &current{nodePair.first};
-    if (!hasAdjacentTo(current)) {
-      leafs.insert(current);
-    }
-  }
-
-  std::list<std::pair<Node, Node>> result;
-
-  for (const auto &nodePair : nodes) {
-    const Node &from{nodePair.first};
-    for (const auto &adjPair : *nodePair.second) {
-      Node to{adjPair.first};
-      if (leafs.contains(to)) {
-        result.push_back({from, to});
-      }
-    }
-  }
-
-  return result;
-}
-
-TEST_CASE("g1") {
-  Graph g("./graphs/g1");
-
-  //  std::cout << "here\n";
-  // g.print();
-
-  SUBCASE("dead ends") {
-    using List = std::list<std::pair<Graph::Node, Graph::Node>>;
-
-    List deadEnds{g.getDeadEnds()};
-    REQUIRE(!deadEnds.empty());
-
-    CHECK_EQ(deadEnds.size(), 3);
-
-    deadEnds.sort();
-    // sorted this manually
-    CHECK_EQ(deadEnds, List {{"a", "d"}, {"g", "h"}, {"g", "i"}});
-  }
 }
 
 void Graph::fillInOut(std::unordered_map<Node, std::pair<int, int>> *inOut,
@@ -379,6 +152,212 @@ Graph::hierholzerDFSHelper(const Node &from, std::list<Node> *result,
   result->push_front(from);
 }
 
+bool Graph::isDigit(const std::string &s) {
+  for (const auto &c : s) {
+    if (!isdigit(c)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+void Graph::printPath(const Graph::Path &path) {
+  std::cout << "\n\n";
+  if (path.has_value()) {
+    std::cout << "distance: " << path->first;
+    std::cout << "\npath: ";
+    for (const auto &node : path->second) {
+      std::cout << node << ' ';
+    }
+    std::cout << std::endl;
+    return;
+  }
+
+  std::cout << "no path\n";
+}
+
+// returns the i-th node
+Graph::Node Graph::getIthNode(const Graph::Path &path, int i) const {
+  // maybe too slow?
+  auto it {path->second.begin()};
+  std::advance(it, i);
+  return *it;
+}
+// returns the first i nodes
+Graph::Path Graph::getIthNodes(const Path &path, int i) const {
+  std::list<Graph::Node> result;
+  auto it {path->second.begin()};
+  for (int j{}; j < i; ++j) {
+    // postfix ++ has higher precedence than *,but anyway
+    result.push_back(*(it++));
+  }
+  // root path here is garbage
+  Distance d{};
+
+  for (auto it {result.begin()}; it != result.end(); ++it) {
+    // for each but the last
+    auto nextIt {it};
+    ++nextIt;
+
+    if (nextIt == result.end()) {
+      break;
+    }
+    // add the distance between the two nodes
+    d += getDistance(*it, *nextIt);
+  }
+  return std::make_pair(d, result);
+}
+
+Graph::Graph(const std::string &filename) {
+  std::ifstream fin(filename);
+  if (!fin) {
+    throw std::runtime_error("Couldn't read file: " + filename +
+                             ". Make sure such file exists.");
+  }
+
+  while (fin) {
+    std::string line;
+    std::getline(fin, line);
+
+    if (line.empty()) {
+      if (fin.eof()) {
+        break;
+      }
+
+      throw std::runtime_error("Wrong file format. There is an empty line " +
+                               static_cast<std::string>("before EOF"));
+    }
+
+    std::stringstream ss(line);
+    std::string from;
+
+    if (!(ss >> from)) {
+      throw std::runtime_error("Couldn't read from line: " + line);
+    }
+    addNode(from);
+
+    while (ss) {
+      std::string to;
+      // if there is nothing left to read
+      if (!(ss >> to)) {
+        break;
+      }
+
+      std::string dist;
+      if (!(ss >> dist)) {
+        // if we read a crossroad, we should read a distance
+        throw std::runtime_error("Couldn't read the distance between " +
+                                 from + " and " + to + " on line: " + line);
+      }
+
+      if (!isDigit(dist)) {
+        throw std::runtime_error("Invalid distance " + dist +" between " +
+                                 from + " and " + to + " on line: " + line);
+      }
+
+      addEdge(from, to, stoi(dist));
+    }
+  }
+
+  fin.close();
+}
+
+void Graph::print() const {
+  for (const auto &fromPair : nodes) {
+    std::cout << "from: " << fromPair.first;
+    for (const auto &toPair : *fromPair.second) {
+      std::cout << " to: " << toPair.first << ", " << toPair.second;
+    }
+    std::cout << std::endl;
+  }
+}
+
+bool Graph::isNode(const Node &n) const {
+  return nodes.contains(n);
+}
+
+Graph::AdjacentTo* Graph::getAdjacentToPointer(const Node &n) const {
+  assert(isNode(n) && "should be a node");
+  const Pointer& temp = nodes.find(n)->second;
+  assert(temp && "unique pointer has no value");
+
+
+  return temp.get();
+}
+
+std::list<std::pair<Graph::Node, Graph::Node>> Graph::getDeadEnds() const {
+  std::unordered_set<Node> leafs;
+  for (const auto &nodePair : nodes) {
+    const Node &current{nodePair.first};
+    if (!hasAdjacentTo(current)) {
+      leafs.insert(current);
+    }
+  }
+
+  std::list<std::pair<Node, Node>> result;
+
+  for (const auto &nodePair : nodes) {
+    const Node &from{nodePair.first};
+    for (const auto &adjPair : *nodePair.second) {
+      Node to{adjPair.first};
+      if (leafs.contains(to)) {
+        result.push_back({from, to});
+      }
+    }
+  }
+
+  return result;
+}
+
+bool Graph::isPath(const Node &from, const std::optional<Node> &to) const {
+  // BFS
+  std::queue<Node> q;
+  q.push(from);
+  std::unordered_set<Node> visited;
+  visited.insert(from);
+
+  while (!q.empty()) {
+    Node current {q.front()};
+    q.pop();
+    visited.insert(current);
+    for (auto pairs : *getAdjacentToPointer(current)) {
+      Node adj{pairs.first};
+      if (to.has_value() && adj == *to) {
+        return true;
+      }
+      if (!visited.contains(adj)) {
+        q.push(adj);
+        visited.insert(adj);
+      }
+    }
+  }
+
+  // when isPair is called with two arguments
+  if (to.has_value()) {
+    return false;
+  }
+
+  // check if the visited and nodes sets are equal
+  if (visited.size() != nodes.size()) {
+    return false;
+  }
+
+  // since we are fillign visited from nodes' first values, this is
+  // redundant too,  but I will leave it for mathematical correctness
+  // plus it's one more check on whether each node in the graph is in
+  // nodes' first
+  for (auto v : visited) {
+    if (!nodes.contains(v)) {
+      return false;
+    }
+  }
+
+  // if they are not not equal
+  return true;
+}
+
+
 // using Path = std::optional<std::pair<Distance, std::list<Node>>>;
 // Graph::Path Graph::findEulerianPath(std::unordered_set<Node> nodesToIgnore =
 //                                     std::unordered_set<Node>()) {
@@ -425,65 +404,6 @@ Graph::Path Graph::findEulerianPath(const std::unordered_set<Node>
   }
 
   return std::nullopt;
-}
-
-TEST_CASE("g1") {
-  Graph g("./graphs/g1");
-
-  //  std::cout << "here\n";
-  // g.print();
-
-  SUBCASE("Eulerian path") {
-    Graph::Path result{g.findEulerianPath()};
-    CHECK(!result.has_value());
-  }
-}
-
-TEST_CASE("g2: linked list") {
-  Graph g("./graphs/g2");
-
-  SUBCASE("Eulerian path") {
-    Graph::Path result{g.findEulerianPath()};
-    CHECK(result.has_value());
-
-    CHECK_EQ(result->first, 35);
-    CHECK_EQ(result->second, std::list<Graph::Node> {"a", "b", "c", "d", "e"});
-  }
-}
-
-TEST_CASE("g3: eulerian path with a few loops") {
-  Graph g("./graphs/g3");
-
-  SUBCASE("Eulerian path") {
-    Graph::Path result{g.findEulerianPath()};
-    CHECK(result.has_value());
-
-    CHECK_EQ(result->first, 10);
-    CHECK_EQ(result->second, std::list<Graph::Node> {"f", "g", "h", "i", "f",
-        "d", "a", "b", "c", "d", "e"});
-  }
-}
-
-TEST_CASE("g4: no edges") {
-  Graph g("./graphs/g4");
-
-  SUBCASE("Eulerian path") {
-    Graph::Path result{g.findEulerianPath()};
-    CHECK(!result.has_value());
-  }
-}
-
-TEST_CASE("g5: cycle with two loops") {
-  Graph g("./graphs/g5");
-
-  SUBCASE("Eulerian path") {
-    Graph::Path result{g.findEulerianPath()};
-    CHECK(result.has_value());
-
-    CHECK_EQ(result->first, 8);
-    CHECK_EQ(result->second, std::list<Graph::Node> {"a", "e", "f", "g", "a",
-        "b", "c", "d", "a"});
-  }
 }
 
 Graph::Path Graph::findShortestPath(const Node &from, const Node &to, const
@@ -559,59 +479,6 @@ Graph::Path Graph::findShortestPath(const Node &from, const Node &to, const
   return std::make_pair(d[to], result);
 }
 
-void printPath(const Graph::Path &path) {
-  std::cout << "\n\n";
-  if (path.has_value()) {
-    std::cout << "distance: " << path->first;
-    std::cout << "\npath: ";
-    for (const auto &node : path->second) {
-      std::cout << node << ' ';
-    }
-    std::cout << std::endl;
-    return;
-  }
-
-  std::cout << "no path\n";
-}
-
-// returns the i-th node
-Graph::Node getIthNode(const Graph::Path &path, int i) {
-  // maybe too slow?
-  auto it {path->second.begin()};
-  std::advance(it, i);
-  return *it;
-}
-
-TEST_CASE("get i-th node") {
-  Graph::Path p{{0, {"a", "b", "c", "d"}}};
-
-  CHECK_EQ(getIthNode(p, 3), "d");
-}
-
-// returns the first i nodes
-Graph::Path Graph::getIthNodes(const Path &path, int i) const {
-  std::list<Graph::Node> result;
-  auto it {path->second.begin()};
-  for (int j{}; j < i; ++j) {
-    // postfix ++ has higher precedence than *,but anyway
-    result.push_back(*(it++));
-  }
-  // root path here is garbage
-  Distance d{};
-
-  for (auto it {result.begin()}; it != result.end(); ++it) {
-    // for each but the last
-    auto nextIt {it};
-    ++nextIt;
-
-    if (nextIt == result.end()) {
-      break;
-    }
-    // add the distance between the two nodes
-    d += getDistance(*it, *nextIt);
-  }
-  return std::make_pair(d, result);
-}
 
 std::vector<Graph::Path>
 Graph::kTHShortestPath(const Node &from, const Node &to, int K,
@@ -677,6 +544,123 @@ Graph::kTHShortestPath(const Node &from, const Node &to, int K,
   return A;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
+#include "../doctest/doctest.h"
+
+TEST_SUITE_BEGIN("graph");
+
+TEST_CASE("g1") {
+  Graph g("./graphs/g1");
+
+  //  std::cout << "here\n";
+  // g.print();
+
+  SUBCASE("isPath: path") {
+    CHECK(g.isPath("a", "b"));
+    CHECK(g.isPath("a", "i"));
+    CHECK(!g.isPath("d", "b"));
+    CHECK(!g.isPath("i", "a"));
+  }
+
+  SUBCASE("isPath: loop") {
+    CHECK(g.isPath("a", "a"));
+    CHECK(g.isPath("b", "b"));
+    CHECK(!g.isPath("g", "g"));
+  }
+
+  SUBCASE("isPath: mother") {
+    CHECK(g.isPath("a"));
+    CHECK(g.isPath("b"));
+    CHECK(!g.isPath("g"));
+  }
+}
+
+
+TEST_CASE("g1") {
+  Graph g("./graphs/g1");
+
+  //  std::cout << "here\n";
+  // g.print();
+
+  SUBCASE("dead ends") {
+    using List = std::list<std::pair<Graph::Node, Graph::Node>>;
+
+    List deadEnds{g.getDeadEnds()};
+    REQUIRE(!deadEnds.empty());
+
+    CHECK_EQ(deadEnds.size(), 3);
+
+    deadEnds.sort();
+    // sorted this manually
+    CHECK_EQ(deadEnds, List {{"a", "d"}, {"g", "h"}, {"g", "i"}});
+  }
+}
+
+TEST_CASE("g1") {
+  Graph g("./graphs/g1");
+
+  //  std::cout << "here\n";
+  // g.print();
+
+  SUBCASE("Eulerian path") {
+    Graph::Path result{g.findEulerianPath()};
+    CHECK(!result.has_value());
+  }
+}
+
+TEST_CASE("g2: linked list") {
+  Graph g("./graphs/g2");
+
+  SUBCASE("Eulerian path") {
+    Graph::Path result{g.findEulerianPath()};
+    CHECK(result.has_value());
+
+    CHECK_EQ(result->first, 35);
+    CHECK_EQ(result->second, std::list<Graph::Node> {"a", "b", "c", "d", "e"});
+  }
+}
+
+TEST_CASE("g3: eulerian path with a few loops") {
+  Graph g("./graphs/g3");
+
+  SUBCASE("Eulerian path") {
+    Graph::Path result{g.findEulerianPath()};
+    CHECK(result.has_value());
+
+    CHECK_EQ(result->first, 10);
+    CHECK_EQ(result->second, std::list<Graph::Node> {"f", "g", "h", "i", "f",
+        "d", "a", "b", "c", "d", "e"});
+  }
+}
+
+TEST_CASE("g4: no edges") {
+  Graph g("./graphs/g4");
+
+  SUBCASE("Eulerian path") {
+    Graph::Path result{g.findEulerianPath()};
+    CHECK(!result.has_value());
+  }
+}
+
+TEST_CASE("g5: cycle with two loops") {
+  Graph g("./graphs/g5");
+
+  SUBCASE("Eulerian path") {
+    Graph::Path result{g.findEulerianPath()};
+    CHECK(result.has_value());
+
+    CHECK_EQ(result->first, 8);
+    CHECK_EQ(result->second, std::list<Graph::Node> {"a", "e", "f", "g", "a",
+        "b", "c", "d", "a"});
+  }
+}
+
 TEST_CASE("g6: nasty test") {
   Graph g("./graphs/g6");
 
@@ -701,15 +685,7 @@ TEST_CASE("g6: nasty test") {
   CHECK_EQ(result[2], Graph::Path{{31, {"a", "b", "c", "g", "i", "f"}}});
 }
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+
 
 // https://github.com/onqtam/doctest/issues/427
 class GraphPrivateMethodsTests {

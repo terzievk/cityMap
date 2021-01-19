@@ -11,6 +11,7 @@
 #include <vector>
 #include <utility>
 #include <algorithm>
+#include <cassert>
 
 #include "./graph.h"
 
