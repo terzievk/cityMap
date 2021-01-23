@@ -8,6 +8,8 @@
   - abstraction
   - file structure
   - documentation
+  - variable names in the famous algorithms like Dijkstra,
+there is no need to be named the same as in the pseudocode
 - add more test cases
 - move tests to a different directory
 - test without cluttering the main
