@@ -1,4 +1,23 @@
 # cityMap
+
+
+
+
+### to-do
+- improve
+  - abstraction
+  - file structure
+  - documentation
+- add more test cases
+- move tests to a different directory
+- test without cluttering the main
+- clean up README
+
+
+
+
+
+
 SDP project, FMI
 ### ![graphs](./6B614CD3-3725-42B3-AFAE-F588C7F9A6A2.jpeg)
 ### intro tl;dr: skip the intro
