@@ -2,13 +2,8 @@
 #ifndef INCLUDES_GRAPH_H_
 #define INCLUDES_GRAPH_H_
 
-#include <fstream>
-#include <sstream>
-#include <iostream>
-
 #include <set>
 #include <list>
-#include <queue>
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
@@ -16,17 +11,10 @@
 #include <string>
 #include <string_view>
 
-#include <memory>
-#include <utility>
+#include <memory>  // unique_ptr
+#include <utility>  // std::pair
 
-#include <iterator>
 #include <optional>
-#include <exception>
-#include <functional>
-
-#include <climits>
-#include <cassert>
-
 
 class Graph {
  public:

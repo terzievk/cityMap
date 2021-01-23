@@ -2,16 +2,8 @@
 #ifndef INCLUDES_CITY_MAP_H_
 #define INCLUDES_CITY_MAP_H_
 
-#include <sstream>
-#include <iostream>
-
 #include <string>
 #include <unordered_set>
-
-#include <vector>
-#include <utility>
-#include <algorithm>
-#include <cassert>
 
 #include "./graph.h"
 

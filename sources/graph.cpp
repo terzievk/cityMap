@@ -1,5 +1,33 @@
 // Copyright
+#include <fstream>
+#include <sstream>
+#include <iostream>
+
+#include <queue>
+
+#include <iterator>
+#include <optional>
+#include <exception>
+#include <functional>  // std::greater
+
+#include <climits>  // INT_MAX
+#include <cassert>
+
 #include "../includes/graph.h"
+
+// these are already in the header:
+// #include <set>
+// #include <list>
+// #include <vector>
+// #include <unordered_set>
+// #include <unordered_map>
+
+// #include <string>
+// #include <string_view>
+
+// #include <memory>  // unique_ptr
+// #include <utility>  // std::pair
+
 
 void Graph::addNode(const Node &n) {
   // insert inserts if there is no such element

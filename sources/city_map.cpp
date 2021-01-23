@@ -1,6 +1,22 @@
 // Copyright
 #include "../includes/city_map.h"
 
+#include <sstream>
+#include <iostream>
+
+#include <vector>
+#include <utility>
+
+#include <algorithm>  // std::min
+
+#include <cassert>
+
+// already in the header:
+// #include <string>
+// #include <unordered_set>
+
+
+
 int CityMap::levenshtein(const std::string &s, const std::string &t) const {
   // return levenshteinHelper(s1, 0, static_cast<int>(s1.size()),
   //                          s2, 0, static_cast<int>(s2.size()));
